@@ -12,16 +12,6 @@
 		
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated"/>
 		<WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf"/>
-		<Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
-		<Upgrade Id="9bec2dfd-0f30-466a-9077-cf86db101cac">
-			<UpgradeVersion
-				Minimum="1.0.0.0" Maximum="2.0.3.0"
-				Property="PREVIOUSVERSIONSINSTALLED"
-				IncludeMinimum="yes" IncludeMaximum="no" />
-		</Upgrade>
-		<InstallExecuteSequence>
-			<RemoveExistingProducts Before="InstallInitialize" />
-		</InstallExecuteSequence>
 		
 		<MediaTemplate EmbedCab="yes"/>
 		<UIRef Id="WixUI_Minimal" />

@@ -1,4 +1,4 @@
-﻿using BruteSharkDesktop;
+using BruteSharkDesktop;
 using PcapProcessor;
 using System;
 using System.Collections.Generic;
@@ -111,7 +111,52 @@ namespace BruteSharkDesktop
             this.modulesTreeView.ExpandAll();
             ApplyProfessionalTheme();
             InitializeToolTips();
+            AddHelpButton();
             CheckForUpdates();
+        }
+
+        /// <summary>
+        /// Adds a Help button that opens the comprehensive HTML help file.
+        /// </summary>
+        private void AddHelpButton()
+        {
+            var helpBtn = new Button
+            {
+                Text = "?  Help / Manual",
+                Name = "helpButton",
+                Location = new Point(10, 340),
+                Size = new Size(265, 32),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(0x45, 0x47, 0x5A),
+                ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4),
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            helpBtn.FlatAppearance.BorderColor = Color.FromArgb(0x89, 0xB4, 0xFA);
+            helpBtn.FlatAppearance.BorderSize = 1;
+            helpBtn.Click += (s, e) =>
+            {
+                string helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "docs", "BruteSharkStudioHelp.html");
+                // Try multiple locations
+                if (!File.Exists(helpPath))
+                    helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "docs", "BruteSharkStudioHelp.html");
+                if (!File.Exists(helpPath))
+                    helpPath = @"C:\WireSharkTools\BruteSharkPro\docs\BruteSharkStudioHelp.html";
+                if (File.Exists(helpPath))
+                {
+                    Process.Start(new ProcessStartInfo { FileName = helpPath, UseShellExecute = true });
+                }
+                else
+                {
+                    // Open online version as fallback
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/blob/main/docs/BruteSharkStudioHelp.html",
+                        UseShellExecute = true
+                    });
+                }
+            };
+            this.modulesGroupBox.Controls.Add(helpBtn);
         }
 
         private void InitilizeModulesUserControls()
