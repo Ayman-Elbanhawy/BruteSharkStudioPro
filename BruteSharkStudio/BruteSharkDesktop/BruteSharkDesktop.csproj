@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<AssemblyName>BruteSharkDesktopStudio</AssemblyName>
+		<UseWindowsForms>true</UseWindowsForms>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<ApplicationIcon>BruteSharkIcon.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AutomaticGraphLayout" Version="1.1.9" />
+	  <PackageReference Include="AutomaticGraphLayout.Drawing" Version="1.1.9" />
+	  <PackageReference Include="AutomaticGraphLayout.GraphViewerGDI" Version="1.1.9" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	  <PackageReference Include="Octokit" Version="0.50.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BruteForce\BruteForce.csproj" />
+	  <ProjectReference Include="..\CommonUi\CommonUi.csproj" />
+	  <ProjectReference Include="..\PcapAnalyzer\PcapAnalyzer.csproj" />
+	  <ProjectReference Include="..\PcapProcessor\PcapProcessor.csproj" />
+	</ItemGroup>
+
+</Project>

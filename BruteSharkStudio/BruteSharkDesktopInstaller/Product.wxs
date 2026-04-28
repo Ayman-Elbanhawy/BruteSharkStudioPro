@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BruteShark Studio v2.0 Installer -->
+<!-- Code updates by Ayman Elbanhawy (c) Softwaremile.com -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	
+	<Product 
+		Id="*" 
+		Name="BruteShark Desktop Studio" 
+		Language="1033" Version="2.0.2.0" 
+		Manufacturer="Ayman Elbanhawy / Softwaremile.com" 
+		UpgradeCode="9bec2dfd-0f30-466a-9077-cf86db101cac">
+		
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated"/>
+		<WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf"/>
+		<Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
+		<Upgrade Id="9bec2dfd-0f30-466a-9077-cf86db101cac">
+			<UpgradeVersion
+				Minimum="1.0.0.0" Maximum="2.0.3.0"
+				Property="PREVIOUSVERSIONSINSTALLED"
+				IncludeMinimum="yes" IncludeMaximum="no" />
+		</Upgrade>
+		<InstallExecuteSequence>
+			<RemoveExistingProducts Before="InstallInitialize" />
+		</InstallExecuteSequence>
+		
+		<MediaTemplate EmbedCab="yes"/>
+		<UIRef Id="WixUI_Minimal" />
+		
+		<Feature Id="ProductFeature" Title="BruteShark Desktop Studio" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="HashcatComponents" />
+			<ComponentRef Id="ApplicationShortcutDesktop"/>
+			<ComponentRef Id="ApplicationStartMenuShortcut"/>
+			<ComponentRef Id="HashcatPathEnvironment"/>
+			<ComponentRef Id="CreateRulesFolder"/>
+		</Feature>
+		
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			
+			<Directory Id="DesktopFolder" Name="Desktop">
+				<Component Id="ApplicationShortcutDesktop" Guid="EE875EB0-FCFF-454F-8FF6-2F59B1085D5A">
+					<Shortcut Id="ApplicationDesktopShortcut"
+						Name="BruteShark Desktop Studio"
+						Description="Network Forensic Analysis Tool v2.0 - Extract credentials, detect C2 beacons, fingerprint TLS"
+						Target="[INSTALLFOLDER]BruteSharkDesktopStudio.exe"
+						WorkingDirectory="INSTALLFOLDER"/>
+					<RemoveFolder Id="DesktopFolder" On="uninstall"/>
+					<RegistryValue
+						Root="HKCU"
+						Key="Software\BruteSharkDesktopStudio"
+						Name="DesktopShortcutInstalled"
+						Type="integer"
+						Value="1"
+						KeyPath="yes"/>
+				</Component>
+			</Directory>
+
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="AppProgramMenuFolder" Name="BruteShark Desktop Studio">
+					<Component Id="ApplicationStartMenuShortcut" Guid="F1A2B3C4-D5E6-7890-ABCD-EF1234567890">
+						<Shortcut Id="StartMenuShortcut"
+							Name="BruteShark Desktop Studio"
+							Description="Network Forensic Analysis Tool v2.0"
+							Target="[INSTALLFOLDER]BruteSharkDesktopStudio.exe"
+							WorkingDirectory="INSTALLFOLDER"/>
+						<RemoveFolder Id="AppProgramMenuFolder" On="uninstall"/>
+						<RegistryValue
+							Root="HKCU"
+							Key="Software\BruteSharkDesktopStudio"
+							Name="StartMenuShortcutInstalled"
+							Type="integer"
+							Value="1"
+							KeyPath="yes"/>
+					</Component>
+				</Directory>
+			</Directory>
+			
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="BruteShark Desktop Studio">
+					<Directory Id="RULESFOLDER" Name="rules">
+						<Component Id="CreateRulesFolder" Guid="C3D5E7F9-A1B2-4C3D-8E9F-0A1B2C3D4E5F">
+							<CreateFolder />
+							<RemoveFolder Id="RemoveRulesFolder" On="uninstall" />
+							<RegistryValue Root="HKLM" Key="Software\BruteSharkDesktopStudio" Name="RulesFolder" Type="string" Value="[RULESFOLDER]" KeyPath="yes" />
+						</Component>
+					</Directory>
+					<Directory Id="HASHCATFOLDER" Name="Hashcat" />
+				</Directory>
+			</Directory>
+			
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+
+			<!-- Main Application -->
+			<Component Id="BruteSharkDesktopStudio.exe">
+				<File Id="BruteSharkDesktopStudio.exe" Source="$(var.BruteSharkDesktop.TargetDir)BruteSharkDesktopStudio.exe" />
+			</Component>
+			<Component Id="BruteSharkDesktopStudio.dll">
+				<File Id="BruteSharkDesktopStudio.dll" Source="$(var.BruteSharkDesktop.TargetDir)BruteSharkDesktopStudio.dll" />
+			</Component>
+			<Component Id="BruteSharkDesktopStudio.dll.config">
+				<File Id="BruteSharkDesktopStudio.dll.config" Source="$(var.BruteSharkDesktop.TargetDir)BruteSharkDesktopStudio.dll.config" />
+			</Component>
+			<Component Id="BruteSharkDesktopStudio.deps.json">
+				<File Id="BruteSharkDesktopStudio.deps.json" Source="$(var.BruteSharkDesktop.TargetDir)BruteSharkDesktopStudio.deps.json" />
+			</Component>
+			<Component Id="BruteSharkDesktopStudio.runtimeconfig.json">
+				<File Id="BruteSharkDesktopStudio.runtimeconfig.json" Source="$(var.BruteSharkDesktop.TargetDir)BruteSharkDesktopStudio.runtimeconfig.json" />
+			</Component>
+
+			<!-- BruteShark Core Libraries -->
+			<Component Id="BruteForce.dll">
+				<File Id="BruteForce.dll" Source="$(var.BruteSharkDesktop.TargetDir)BruteForce.dll" />
+			</Component>
+			<Component Id="PcapAnalyzer.dll">
+				<File Id="PcapAnalyzer.dll" Source="$(var.BruteSharkDesktop.TargetDir)PcapAnalyzer.dll" />
+			</Component>
+			<Component Id="PcapProcessor.dll">
+				<File Id="PcapProcessor.dll" Source="$(var.BruteSharkDesktop.TargetDir)PcapProcessor.dll" />
+			</Component>
+			<Component Id="CommonUi.dll">
+				<File Id="CommonUi.dll" Source="$(var.BruteSharkDesktop.TargetDir)CommonUi.dll" />
+			</Component>
+
+			<!-- Third-Party Analysis Libraries -->
+			<Component Id="PacketDotNet.dll">
+				<File Id="PacketDotNet.dll" Source="$(var.BruteSharkDesktop.TargetDir)PacketDotNet.dll" />
+			</Component>
+			<Component Id="SharpPcap.dll">
+				<File Id="SharpPcap.dll" Source="$(var.BruteSharkDesktop.TargetDir)SharpPcap.dll" />
+			</Component>
+			<Component Id="Asn1.dll">
+				<File Id="Asn1.dll" Source="$(var.BruteSharkDesktop.TargetDir)Asn1.dll" />
+			</Component>
+			<Component Id="DNS.dll">
+				<File Id="DNS.dll" Source="$(var.BruteSharkDesktop.TargetDir)DNS.dll" />
+			</Component>
+			<Component Id="DnsClient.dll">
+				<File Id="DnsClient.dll" Source="$(var.BruteSharkDesktop.TargetDir)DnsClient.dll" />
+			</Component>
+
+			<!-- VoIP / SIP -->
+			<Component Id="SIPSorcery.dll">
+				<File Id="SIPSorcery.dll" Source="$(var.BruteSharkDesktop.TargetDir)SIPSorcery.dll" />
+			</Component>
+			<Component Id="SIPSorceryMedia.Abstractions.dll">
+				<File Id="SIPSorceryMedia.Abstractions.dll" Source="$(var.BruteSharkDesktop.TargetDir)SIPSorceryMedia.Abstractions.dll" />
+			</Component>
+
+			<!-- Cryptography -->
+			<Component Id="BouncyCastle.Crypto.dll">
+				<File Id="BouncyCastle.Crypto.dll" Source="$(var.BruteSharkDesktop.TargetDir)BouncyCastle.Crypto.dll" />
+			</Component>
+
+			<!-- Graph Visualization -->
+			<Component Id="AutomaticGraphLayout.dll">
+				<File Id="AutomaticGraphLayout.dll" Source="$(var.BruteSharkDesktop.TargetDir)AutomaticGraphLayout.dll" />
+			</Component>
+			<Component Id="AutomaticGraphLayout.Drawing.dll">
+				<File Id="AutomaticGraphLayout.Drawing.dll" Source="$(var.BruteSharkDesktop.TargetDir)AutomaticGraphLayout.Drawing.dll" />
+			</Component>
+			<Component Id="Microsoft.Msagl.GraphViewerGdi.dll">
+				<File Id="Microsoft.Msagl.GraphViewerGdi.dll" Source="$(var.BruteSharkDesktop.TargetDir)Microsoft.Msagl.GraphViewerGdi.dll" />
+			</Component>
+
+			<!-- SQLite (Phase 4: Case Management) -->
+			<Component Id="Microsoft.Data.Sqlite.dll">
+				<File Id="Microsoft.Data.Sqlite.dll" Source="$(var.BruteSharkDesktop.TargetDir)Microsoft.Data.Sqlite.dll" />
+			</Component>
+			<Component Id="SQLitePCLRaw.batteries_v2.dll">
+				<File Id="SQLitePCLRaw.batteries_v2.dll" Source="$(var.BruteSharkDesktop.TargetDir)SQLitePCLRaw.batteries_v2.dll" />
+			</Component>
+			<Component Id="SQLitePCLRaw.core.dll">
+				<File Id="SQLitePCLRaw.core.dll" Source="$(var.BruteSharkDesktop.TargetDir)SQLitePCLRaw.core.dll" />
+			</Component>
+			<Component Id="SQLitePCLRaw.provider.e_sqlite3.dll">
+				<File Id="SQLitePCLRaw.provider.e_sqlite3.dll" Source="$(var.BruteSharkDesktop.TargetDir)SQLitePCLRaw.provider.e_sqlite3.dll" />
+			</Component>
+
+			<!-- JSON, HTTP, WebSocket -->
+			<Component Id="Newtonsoft.Json.dll">
+				<File Id="Newtonsoft.Json.dll" Source="$(var.BruteSharkDesktop.TargetDir)Newtonsoft.Json.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Logging.Abstractions.dll">
+				<File Id="Microsoft.Extensions.Logging.Abstractions.dll" Source="$(var.BruteSharkDesktop.TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" />
+			</Component>
+			<Component Id="Octokit.dll">
+				<File Id="Octokit.dll" Source="$(var.BruteSharkDesktop.TargetDir)Octokit.dll" />
+			</Component>
+			<Component Id="websocket.sharp.dll">
+				<File Id="websocket.sharp.dll" Source="$(var.BruteSharkDesktop.TargetDir)websocket-sharp.dll" />
+			</Component>
+
+		</ComponentGroup>
+	</Fragment>
+
+	<Fragment>
+		<DirectoryRef Id="HASHCATFOLDER">
+			<Component Id="HashcatPathEnvironment" Guid="0B1A81C9-B617-45B5-A88A-38E85490E7F0">
+				<Environment Id="HashcatPath" Name="PATH" Value="[HASHCATFOLDER]" Permanent="no" Part="last" Action="set" System="yes" />
+				<RegistryValue Root="HKLM" Key="Software\BruteSharkDesktopStudio" Name="HashcatPath" Type="integer" Value="1" KeyPath="yes" />
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+</Wix>

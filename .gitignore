@@ -1,0 +1,41 @@
+# Build artifacts
+**/bin/
+**/obj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+
+# NuGet
+**/packages/
+*.nupkg
+**/*.nupkg
+
+# WiX Installer build output
+BruteSharkStudio/BruteSharkDesktopInstaller/bin/
+BruteSharkStudio/BruteSharkDesktopInstaller/obj/
+
+# Hashcat (large binary - bundled in installer)
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/hashcat.exe
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/*.dll
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/*.exe
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/OpenCL/
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/hashcat.hctune
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/hashcat.hcstat2
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/modules/
+BruteSharkStudio/BruteSharkDesktopInstaller/Assets/Hashcat/extra/
+
+# Release (large MSI/ZIP - use GitHub Releases)
+release/*.msi
+release/*.zip
+
+# .NET
+*.DotSettings.user
+appsettings.*.json
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.log

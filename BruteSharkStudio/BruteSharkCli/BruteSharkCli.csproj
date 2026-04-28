@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<AssemblyName>BruteSharkDesktopStudioCli</AssemblyName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="CommandLineParser" Version="2.8.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\BruteForce\BruteForce.csproj" />
+	  <ProjectReference Include="..\CommonUi\CommonUi.csproj" />
+	  <ProjectReference Include="..\PcapAnalyzer\PcapAnalyzer.csproj" />
+	  <ProjectReference Include="..\PcapProcessor\PcapProcessor.csproj" />
+	</ItemGroup>
+</Project>
