@@ -1,0 +1,29 @@
+SCREENSHOT INSTRUCTIONS - BruteShark Studio Pro v2.0
+=====================================================
+
+What to Capture (5 screenshots):
+--------------------------------
+1. Main Window - full app, dark theme, all module tree nodes visible
+   Save as: readme_media\BruteSharkDesktopStudio_Main_v2.png
+
+2. Detection View - click Alerts or C2 Beacons in the tree
+   Save as: readme_media\BruteSharkDesktopStudio_Detection_v2.png
+
+3. Fingerprints View - click JA3/JA3S or TLS Certificates or SSH
+   Save as: readme_media\BruteSharkDesktopStudio_Fingerprints_v2.png
+
+4. Hashes View - click Hashes in Credentials, show Hashcat button
+   Save as: readme_media\BruteSharkDesktopStudio_Hashes_v2.png
+
+5. Export Dialog / Help - click Export Results or Help button
+   Save as: readme_media\BruteSharkDesktopStudio_HelpExport_v2.png
+
+How to Take:
+- Win+Shift+S -> draw rectangle around BruteShark window
+- Paste into Paint -> crop to just app window -> Save As PNG
+- Put files in: C:\WireSharkTools\BruteSharkPro\readme_media\
+
+After screenshots are saved there, tell me "done" and I will:
+1. Update README.md with the new screenshots
+2. Update the help file with the new screenshots
+3. Push everything to GitHub

@@ -30,6 +30,19 @@ namespace BruteSharkDesktop
             _filePreviewUserControl = new FilePreviewUserControl();
             _filePreviewUserControl.Dock = DockStyle.Fill;
             this.mainSplitContainer.Panel2.Controls.Add(_filePreviewUserControl);
+
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var bg = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            var border = Color.FromArgb(0x45, 0x47, 0x5A);
+
+            this.BackColor = bg;
+            mainSplitContainer.BackColor = border;
+            mainSplitContainer.Panel1.BackColor = bg;
+            mainSplitContainer.Panel2.BackColor = bg;
         }
 
         // TODO: use PL object

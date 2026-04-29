@@ -18,6 +18,23 @@ namespace BruteSharkDesktop
         public FilePreviewUserControl()
         {
             InitializeComponent();
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var bg = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            var panel = Color.FromArgb(0x25, 0x25, 0x40);
+            var text = Color.FromArgb(0xCD, 0xD6, 0xF4);
+
+            this.BackColor = bg;
+            mainSplitContainer.BackColor = Color.FromArgb(0x45, 0x47, 0x5A);
+            mainSplitContainer.Panel1.BackColor = bg;
+            mainSplitContainer.Panel2.BackColor = bg;
+            filePreviewSplitContainer.BackColor = Color.FromArgb(0x45, 0x47, 0x5A);
+            filePreviewSplitContainer.Panel1.BackColor = bg;
+            filePreviewSplitContainer.Panel2.BackColor = bg;
+            headerLabel.ForeColor = text;
         }
 
         public void PreviewFile(byte[] data, string extention)

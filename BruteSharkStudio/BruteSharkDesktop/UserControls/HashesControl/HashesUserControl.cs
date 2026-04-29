@@ -35,6 +35,60 @@ namespace BruteSharkDesktop
             _hashesTableUserControl.SelectionChanged += OnSelectionChanged;
             this.mainSplitContainer.Panel1.Controls.Clear();
             this.mainSplitContainer.Panel1.Controls.Add(_hashesTableUserControl);
+
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var bg = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            var panel = Color.FromArgb(0x25, 0x25, 0x40);
+            var text = Color.FromArgb(0xCD, 0xD6, 0xF4);
+            var border = Color.FromArgb(0x45, 0x47, 0x5A);
+
+            this.BackColor = bg;
+
+            // Split containers
+            mainSplitContainer.BackColor = border;
+            mainSplitContainer.Panel1.BackColor = bg;
+            mainSplitContainer.Panel2.BackColor = bg;
+            hashViewSplitContainer.BackColor = border;
+            hashViewSplitContainer.Panel1.BackColor = bg;
+            hashViewSplitContainer.Panel2.BackColor = bg;
+
+            // Panel
+            panel1.BackColor = bg;
+
+            // Text boxes
+            foreach (var tb in new[] { selectedFolderTextBox, wordlistTextBox, hashcatPathTextBox, hashcatExtraArgsTextBox })
+            {
+                tb.BackColor = panel;
+                tb.ForeColor = text;
+                tb.BorderStyle = BorderStyle.FixedSingle;
+            }
+
+            // Combo box
+            hashesComboBox.BackColor = panel;
+            hashesComboBox.ForeColor = text;
+
+            // Rich text box
+            hashDataRichTextBox.BackColor = panel;
+            hashDataRichTextBox.ForeColor = text;
+            hashDataRichTextBox.BorderStyle = BorderStyle.None;
+
+            // Buttons
+            foreach (var btn in new[] { choseDirectoryButton, createHashcatFileButton, crackWithHashcatButton, choseWordlistButton, choseHashcatButton })
+            {
+                btn.BackColor = border;
+                btn.ForeColor = text;
+                btn.FlatStyle = FlatStyle.Flat;
+            }
+
+            // Labels
+            foreach (var lbl in new[] { label1, label2, label3, label4, label5, label6, label7 })
+            {
+                lbl.ForeColor = text;
+            }
         }
 
         public void AddHash(PcapAnalyzer.NetworkHash networkHash)

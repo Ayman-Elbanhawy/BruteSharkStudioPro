@@ -44,6 +44,31 @@ namespace BruteSharkDesktop
             // the first panel (not drawing the tree view). This force the second panel to refresh.
             this.mainSplitContainer.Panel2.Refresh();
             this.nodeTreeView.Click += (object sender, EventArgs e) => this.mainSplitContainer.Panel2.Refresh();
+
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var bg = System.Drawing.Color.FromArgb(0x1E, 0x1E, 0x2E);
+            var panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x40);
+            var text = System.Drawing.Color.FromArgb(0xCD, 0xD6, 0xF4);
+            var border = System.Drawing.Color.FromArgb(0x45, 0x47, 0x5A);
+
+            this.BackColor = bg;
+
+            // Split container
+            mainSplitContainer.BackColor = border;
+            mainSplitContainer.Panel1.BackColor = bg;
+            mainSplitContainer.Panel2.BackColor = bg;
+
+            // Tree view
+            nodeTreeView.BackColor = panel;
+            nodeTreeView.ForeColor = text;
+            nodeTreeView.BorderStyle = BorderStyle.None;
+
+            // MSAGL graph viewer background
+            _viewer.BackColor = panel;
         }
 
         private void OnGraphMouseClick(object sender, MouseEventArgs e)

@@ -46,10 +46,23 @@ namespace BruteSharkDesktop
         private GenericTableUserControl _dhcpUserControl;
         private GenericTableUserControl _arpUserControl;
         private GenericTableUserControl _anomaliesUserControl;
+        private GenericTableUserControl _dnsExfilUserControl;
+        private GenericTableUserControl _detectionMatchUserControl;
+
+        // Enterprise: Additional user controls
+        private PacketHexViewerUserControl _hexViewerUserControl;
+        private ProtocolStatsUserControl _protocolStatsUserControl;
+        private AuditLogUserControl _auditLogUserControl;
+        private BacnetAnalyzerUserControl _bacnetAnalyzerUserControl;
+
+        private TimelineUserControl _timelineUserControl;
+        private FlowStatsUserControl _flowStatsUserControl;
+        private CaptureCompareUserControl _captureCompareUserControl;
 
         // Phase 3: Detection & intelligence engine
         private PcapAnalyzer.DetectionRuleEngine _detectionEngine;
         private PcapAnalyzer.BeaconDetectionModule _beaconModule;
+        private PcapAnalyzer.FlowAggregationEngine _flowEngine;
 
 
         public MainForm()
@@ -103,6 +116,13 @@ namespace BruteSharkDesktop
             _processor.TcpPacketArived += (s, e) => _beaconModule.Analyze(
                 CommonUi.Casting.CastProcessorTcpPacketToAnalyzerTcpPacket(e.Packet));
 
+            // Phase 3: Flow aggregation engine for deep traffic statistics
+            _flowEngine = new PcapAnalyzer.FlowAggregationEngine();
+            _processor.TcpPacketArived += (s, e) => _flowEngine.Analyze(
+                CommonUi.Casting.CastProcessorTcpPacketToAnalyzerTcpPacket(e.Packet));
+            _processor.UdpPacketArived += (s, e) => _flowEngine.Analyze(
+                CommonUi.Casting.CastProcessorUdpPacketToAnalyzerUdpPacket(e.Packet));
+
             InitilizeModulesUserControls();
             InitilizeFilesIconsList();
             InitilizeModulesCheckedListBox();
@@ -113,6 +133,11 @@ namespace BruteSharkDesktop
             InitializeToolTips();
             AddHelpButton();
             CheckForUpdates();
+            AuditLog("Start", "BruteShark Desktop Studio started");
+
+            // Enterprise: Keyboard shortcuts
+            this.KeyPreview = true;
+            this.KeyDown += MainForm_KeyDown;
         }
 
         /// <summary>
@@ -124,7 +149,7 @@ namespace BruteSharkDesktop
             {
                 Text = "?  Help / Manual",
                 Name = "helpButton",
-                Location = new Point(10, 340),
+                Location = new Point(10, 10),
                 Size = new Size(265, 32),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(0x45, 0x47, 0x5A),
@@ -134,10 +159,11 @@ namespace BruteSharkDesktop
             };
             helpBtn.FlatAppearance.BorderColor = Color.FromArgb(0x89, 0xB4, 0xFA);
             helpBtn.FlatAppearance.BorderSize = 1;
+            helpBtn.Dock = DockStyle.Bottom;
+            this.modulesSplitContainer.Panel1.Controls.Add(helpBtn);
             helpBtn.Click += (s, e) =>
             {
                 string helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "docs", "BruteSharkStudioHelp.html");
-                // Try multiple locations
                 if (!File.Exists(helpPath))
                     helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "docs", "BruteSharkStudioHelp.html");
                 if (!File.Exists(helpPath))
@@ -148,7 +174,6 @@ namespace BruteSharkDesktop
                 }
                 else
                 {
-                    // Open online version as fallback
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = "https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/blob/main/docs/BruteSharkStudioHelp.html",
@@ -156,7 +181,37 @@ namespace BruteSharkDesktop
                     });
                 }
             };
-            this.modulesGroupBox.Controls.Add(helpBtn);
+
+            // 🌓 Theme toggle — top-right of results panel, always visible
+            var themeBtn = new Button
+            {
+                Text = "🌙",
+                Name = "themeToggleBtn",
+                Size = new Size(40, 30),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(0x45, 0x47, 0x5A),
+                ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4),
+                Font = new Font("Segoe UI", 14f),
+                Cursor = Cursors.Hand,
+                Dock = DockStyle.Right
+            };
+            themeBtn.FlatAppearance.BorderColor = Color.FromArgb(0x89, 0xB4, 0xFA);
+            themeBtn.FlatAppearance.BorderSize = 1;
+            themeBtn.Click += (s, e) =>
+            {
+                ToggleTheme();
+                themeBtn.Text = _isDarkTheme ? "🌙" : "☀️";
+            };
+            var themeTip = new ToolTip();
+            themeTip.SetToolTip(themeBtn, "Toggle Dark/Light Theme");
+
+            // Create a small toolbar panel at the top of the results area
+            var toolBar = new Panel { Height = 34, Dock = DockStyle.Top, BackColor = Color.FromArgb(0x25, 0x25, 0x40) };
+            toolBar.Controls.Add(themeBtn);
+
+            // Add toolbar BEFORE the existing split container (so it docks on top)
+            this.mainSplitContainer.Panel2.Controls.Add(toolBar);
+            toolBar.BringToFront();
         }
 
         private void InitilizeModulesUserControls()
@@ -199,6 +254,21 @@ namespace BruteSharkDesktop
             _arpUserControl.Dock = DockStyle.Fill;
             _anomaliesUserControl = new GenericTableUserControl();
             _anomaliesUserControl.Dock = DockStyle.Fill;
+            _dnsExfilUserControl = new GenericTableUserControl();
+            _dnsExfilUserControl.Dock = DockStyle.Fill;
+            _detectionMatchUserControl = new GenericTableUserControl();
+            _detectionMatchUserControl.Dock = DockStyle.Fill;
+
+            _hexViewerUserControl = new PacketHexViewerUserControl();
+            _protocolStatsUserControl = new ProtocolStatsUserControl();
+            _auditLogUserControl = new AuditLogUserControl();
+            _bacnetAnalyzerUserControl = new BacnetAnalyzerUserControl();
+
+            _timelineUserControl = new TimelineUserControl();
+            _timelineUserControl.Dock = DockStyle.Fill;
+            _flowStatsUserControl = new FlowStatsUserControl();
+            _captureCompareUserControl = new CaptureCompareUserControl();
+            _flowStatsUserControl.Dock = DockStyle.Fill;
         }
 
         private void InitilizeInterfacesComboBox()
@@ -213,7 +283,7 @@ namespace BruteSharkDesktop
         {
             foreach (var module_name in _analyzer.AvailableModulesNames)
             {
-                this.modulesCheckedListBox.Items.Add(module_name, isChecked: false);
+                this.modulesCheckedListBox.Items.Add(module_name, isChecked: true);
             }
         }
 
@@ -397,12 +467,44 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
                 if (this.modulesTreeView.Nodes["DetectionNode"].Nodes["BeaconsNode"] != null)
                     this.modulesTreeView.Nodes["DetectionNode"].Nodes["BeaconsNode"].Text = $"C2 Beacons ({_networkContext.BeaconCount})";
             }
+            // BUGFIX: Unified PayloadAlert handler — routes SMB/ARP/anomaly/general alerts properly
             else if (e.ParsedItem is PcapAnalyzer.PayloadAlert)
             {
                 var alert = e.ParsedItem as PcapAnalyzer.PayloadAlert;
                 _networkContext.AddPayloadAlert(alert);
+
+                // Route to specific module tabs based on alert type prefix
+                if (alert.AlertType?.StartsWith("SMB_") == true)
+                {
+                    _smbUserControl.AddDataToTable(alert);
+                    if (this.modulesTreeView.Nodes["ProtocolsNode"]?.Nodes["SmbNode"] != null)
+                        this.modulesTreeView.Nodes["ProtocolsNode"].Nodes["SmbNode"].Text = $"SMB ({_smbUserControl.ItemsCount})";
+                }
+                if (alert.AlertType?.StartsWith("ARP_") == true)
+                {
+                    _arpUserControl.AddDataToTable(alert);
+                    if (this.modulesTreeView.Nodes["ProtocolsNode"]?.Nodes["ArpNode"] != null)
+                        this.modulesTreeView.Nodes["ProtocolsNode"].Nodes["ArpNode"].Text = $"ARP ({_arpUserControl.ItemsCount})";
+                }
+
+                // General alerts tab (ALL alerts)
                 _alertsUserControl.AddDataToTable(alert);
-                // Also add as detection match for rule-like alerts
+                if (this.modulesTreeView.Nodes["DetectionNode"]?.Nodes["AlertsNode"] != null)
+                    this.modulesTreeView.Nodes["DetectionNode"].Nodes["AlertsNode"].Text = $"Alerts ({_alertsUserControl.ItemsCount})";
+
+                // Route anomaly/spike/rate alerts to anomalies tab
+                if (alert.AlertType?.Contains("Anomaly") == true || alert.AlertType?.Contains("Spike") == true || alert.AlertType?.Contains("Rate") == true)
+                {
+                    _anomaliesUserControl.AddDataToTable(alert);
+                    // Remove dummy child node on first real anomaly
+                    if (this.modulesTreeView.Nodes["AnomaliesNode"]?.Nodes.Count > 0 &&
+                        this.modulesTreeView.Nodes["AnomaliesNode"].Nodes[0].Name == "AnomaliesDummy")
+                        this.modulesTreeView.Nodes["AnomaliesNode"].Nodes.Clear();
+                    if (this.modulesTreeView.Nodes["AnomaliesNode"] != null)
+                        this.modulesTreeView.Nodes["AnomaliesNode"].Text = $"Anomalies ({_anomaliesUserControl.ItemsCount})";
+                }
+
+                // Add as detection match for rule-like alerts
                 _networkContext.AddDetectionMatch(new PcapAnalyzer.RuleMatch
                 {
                     RuleName = alert.AlertType,
@@ -411,8 +513,6 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
                     DestinationIp = alert.DestinationIp,
                     MatchDetails = alert.Details
                 });
-                if (this.modulesTreeView.Nodes["DetectionNode"].Nodes["AlertsNode"] != null)
-                    this.modulesTreeView.Nodes["DetectionNode"].Nodes["AlertsNode"].Text = $"Alerts ({_networkContext.PayloadAlerts.Count})";
             }
             else if (e.ParsedItem is PcapAnalyzer.DhcpLease)
             {
@@ -446,20 +546,13 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
                 if (this.modulesTreeView.Nodes["FingerprintsNode"].Nodes["TlsCertsNode"] != null)
                     this.modulesTreeView.Nodes["FingerprintsNode"].Nodes["TlsCertsNode"].Text = $"TLS Certs ({_networkContext.TlsCertificates.Count})";
             }
-            else if (e.ParsedItem is PcapAnalyzer.PayloadAlert)
+            else if (e.ParsedItem is PcapAnalyzer.DnsExfilAlert)
             {
-                var alert = e.ParsedItem as PcapAnalyzer.PayloadAlert;
-                _networkContext.AddPayloadAlert(alert);
-                _alertsUserControl.AddDataToTable(alert);
-                if (this.modulesTreeView.Nodes["DetectionNode"]?.Nodes["AlertsNode"] != null)
-                    this.modulesTreeView.Nodes["DetectionNode"].Nodes["AlertsNode"].Text = $"Alerts ({_alertsUserControl.ItemsCount})";
-                // Also track in anomalies if stats-related
-                if (alert.AlertType?.Contains("Anomaly") == true || alert.AlertType?.Contains("Spike") == true || alert.AlertType?.Contains("Rate") == true)
-                {
-                    _anomaliesUserControl.AddDataToTable(alert);
-                    if (this.modulesTreeView.Nodes["AnomaliesNode"] != null)
-                        this.modulesTreeView.Nodes["AnomaliesNode"].Text = $"Anomalies ({_anomaliesUserControl.ItemsCount})";
-                }
+                var dnsExfil = e.ParsedItem as PcapAnalyzer.DnsExfilAlert;
+                _networkContext.AddDnsExfilAlert(dnsExfil);
+                _dnsExfilUserControl.AddDataToTable(dnsExfil);
+                if (this.modulesTreeView.Nodes["ExfiltrationNode"]?.Nodes["DnsExfilNode"] != null)
+                    this.modulesTreeView.Nodes["ExfiltrationNode"].Nodes["DnsExfilNode"].Text = $"DNS Exfil ({_dnsExfilUserControl.ItemsCount})";
             }
         }
 
@@ -472,10 +565,13 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
             }
         }
 
-        // Phase 3: Detection rule match handler
+        // Phase 3: Detection rule match handler — now updates UI
         private void OnRuleMatched(object sender, PcapAnalyzer.RuleMatchEventArgs e)
         {
             _networkContext.AddDetectionMatch(e.Match);
+            _detectionMatchUserControl.AddDataToTable(e.Match);
+            if (this.modulesTreeView.Nodes["DetectionNode"]?.Nodes["RuleMatchNode"] != null)
+                this.modulesTreeView.Nodes["DetectionNode"].Nodes["RuleMatchNode"].Text = $"Rule Matches ({_networkContext.DetectionMatches.Count})";
         }
 
         // Phase 3: Beacon detected handler
@@ -516,6 +612,7 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
 
             listViewRow.Tag = new { FilePath = filePath, Status = "Wait" };
             this.filesListView.Items.Add(listViewRow);
+            AuditLog("File", $"Added: {Path.GetFileName(filePath)}");
         }
 
         private void RunButton_Click(object sender, EventArgs e)
@@ -528,6 +625,7 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
             }
 
             // Keep the WinForms UI responsive while large captures are processed.
+            AuditLog("Analysis", $"Starting analysis of {this._files.Count} file(s)");
             new Thread(() => _processor.ProcessPcaps(this._files)).Start();
         }
 
@@ -588,6 +686,40 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
                     break;
                 case "AnomaliesNode":
                     this.modulesSplitContainer.Panel2.Controls.Add(_anomaliesUserControl);
+                    break;
+                case "RuleMatchNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_detectionMatchUserControl);
+                    break;
+                case "DnsExfilNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_dnsExfilUserControl);
+                    break;
+                case "PacketHexNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_hexViewerUserControl);
+                    break;
+                case "ProtocolStatsNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_protocolStatsUserControl);
+                    _protocolStatsUserControl.UpdateStats(_networkContext);
+                    break;
+                case "AuditLogNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_auditLogUserControl);
+                    break;
+                case "SettingsThemeNode":
+                    ToggleTheme();
+                    break;
+                case "BacnetAnalysisNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_bacnetAnalyzerUserControl);
+                    _bacnetAnalyzerUserControl.Analyze(_networkContext);
+                    break;
+                case "TimelineNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_timelineUserControl);
+                    _timelineUserControl.LoadFromContext(_networkContext);
+                    break;
+                case "FlowStatsNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_flowStatsUserControl);
+                    _flowStatsUserControl.LoadFromEngine(_flowEngine);
+                    break;
+                case "CaptureCompareNode":
+                    this.modulesSplitContainer.Panel2.Controls.Add(_captureCompareUserControl);
                     break;
                 default:
                     break;
@@ -748,6 +880,12 @@ This means a faster processing but also that some obects may not be extracted.")
                     CommonUi.Exporting.ExportJa3Fingerprints(outputDirectoryPath, _networkContext.Ja3Fingerprints);
                     CommonUi.Exporting.ExportBeaconResults(outputDirectoryPath, _networkContext.BeaconResults);
                     CommonUi.Exporting.ExportRuleMatches(outputDirectoryPath, _networkContext.DetectionMatches);
+                    CommonUi.Exporting.ExportSshFingerprints(outputDirectoryPath, _networkContext.SshFingerprints);
+                    CommonUi.Exporting.ExportDhcpLeases(outputDirectoryPath, _networkContext.DhcpLeases);
+                    CommonUi.Exporting.ExportHttpTransactions(outputDirectoryPath, _networkContext.HttpTransactions);
+                    CommonUi.Exporting.ExportPayloadAlerts(outputDirectoryPath, _networkContext.PayloadAlerts);
+                    CommonUi.Exporting.ExportTlsCertificates(outputDirectoryPath, _networkContext.TlsCertificates);
+                    CommonUi.Exporting.ExportDnsExfilAlerts(outputDirectoryPath, _networkContext.DnsExfilAlerts);
                     ExportHashes(outputDirectoryPath, _networkContext.Hashes);
 
                     // Export the full interactive HTML forensic report
@@ -756,6 +894,7 @@ This means a faster processing but also that some obects may not be extracted.")
                     this.progressBar.CustomText = string.Empty;
 
                     Utilities.ShowInfoMessageBox($"Successfully exported results including Full HTML Report: {htmlReportPath}");
+                    AuditLog("Export", $"Exported all results to {outputDirectoryPath}");
                 }
                 catch (Exception ex)
                 {
@@ -804,6 +943,7 @@ This means a faster processing but also that some obects may not be extracted.")
         {
             _networkContext = new CommonUi.NetworkContext();
             _analyzer.Clear();
+            _flowEngine?.Clear();
 
             // Clear all modules user controls by recreating them. 
             InitilizeModulesUserControls();
@@ -821,6 +961,7 @@ This means a faster processing but also that some obects may not be extracted.")
 
             // Select the head of the modules tree view to force refreshing of the current user control.
             modulesTreeView.SelectedNode = modulesTreeView.Nodes[0];
+            AuditLog("Clear", "Results cleared");
         }
 
         private async void CheckForUpdates()
@@ -864,6 +1005,7 @@ This means a faster processing but also that some obects may not be extracted.")
             };
             detectionNode.Nodes.Add(new TreeNode { Name = "AlertsNode", Text = "Alerts" });
             detectionNode.Nodes.Add(new TreeNode { Name = "BeaconsNode", Text = "C2 Beacons" });
+            detectionNode.Nodes.Add(new TreeNode { Name = "RuleMatchNode", Text = "Rule Matches" });
 
             // Fingerprints top-level node
             var fingerprintsNode = new TreeNode
@@ -894,11 +1036,90 @@ This means a faster processing but also that some obects may not be extracted.")
             };
             anomaliesNode.Nodes.Add(new TreeNode { Name = "AnomaliesDummy", Text = "(awaiting data)" });
 
+            // Exfiltration top-level node
+            var exfiltrationNode = new TreeNode
+            {
+                Name = "ExfiltrationNode",
+                Text = "Exfiltration"
+            };
+            exfiltrationNode.Nodes.Add(new TreeNode { Name = "DnsExfilNode", Text = "DNS Exfiltration" });
+
             // Add all new nodes to the tree view after the existing ones
             this.modulesTreeView.Nodes.Add(detectionNode);
             this.modulesTreeView.Nodes.Add(fingerprintsNode);
             this.modulesTreeView.Nodes.Add(protocolsNode);
             this.modulesTreeView.Nodes.Add(anomaliesNode);
+            this.modulesTreeView.Nodes.Add(exfiltrationNode);
+
+            // Enterprise: Tools node
+            var toolsNode = new TreeNode
+            {
+                Name = "ToolsNode",
+                Text = "Tools"
+            };
+            toolsNode.Nodes.Add(new TreeNode { Name = "PacketHexNode", Text = "Hex Viewer" });
+
+            // Enterprise: Statistics node
+            var statsNode = new TreeNode
+            {
+                Name = "StatisticsNode",
+                Text = "Statistics"
+            };
+            statsNode.Nodes.Add(new TreeNode { Name = "ProtocolStatsNode", Text = "Protocol Stats" });
+
+            // Enterprise: Settings node
+            var settingsNode = new TreeNode
+            {
+                Name = "SettingsNode",
+                Text = "Settings"
+            };
+            settingsNode.Nodes.Add(new TreeNode { Name = "SettingsThemeNode", Text = "Toggle Dark/Light Theme" });
+
+            // Enterprise: Audit log node
+            var auditNode = new TreeNode
+            {
+                Name = "AuditLogNode",
+                Text = "Audit Log"
+            };
+
+            // Enterprise: Plugin stub node
+            var pluginsNode = new TreeNode
+            {
+                Name = "PluginsNode",
+                Text = "Plugins"
+            };
+            pluginsNode.Nodes.Add(new TreeNode { Name = "PluginStubNode", Text = "Plugin SDK (coming soon)" });
+
+            this.modulesTreeView.Nodes.Add(toolsNode);
+            this.modulesTreeView.Nodes.Add(statsNode);
+
+            // Timeline & Flow nodes
+            var timelineNode = new TreeNode { Name = "TimelineNode", Text = "Timeline" };
+            var flowNode = new TreeNode { Name = "FlowStatsNode", Text = "Flow Statistics" };
+
+            // BACnet Analysis node
+            var bacnetNode = new TreeNode
+            {
+                Name = "BacnetAnalysisNode",
+                Text = "BACnet Analysis"
+            };
+
+            this.modulesTreeView.Nodes.Add(timelineNode);
+
+            // Enterprise: Flow Statistics node
+            this.modulesTreeView.Nodes.Add(timelineNode);
+            this.modulesTreeView.Nodes.Add(flowNode);
+            this.modulesTreeView.Nodes.Add(bacnetNode);
+
+            // Monitor node (v2.3)
+            var monitorNode = new TreeNode { Name = "MonitorNode", Text = "Monitor" };
+            monitorNode.Nodes.Add(new TreeNode { Name = "CaptureCompareNode", Text = "Capture Compare" });
+            monitorNode.Nodes.Add(new TreeNode { Name = "LiveBacnetStub", Text = "Live BACnet (coming v2.3)" });
+            monitorNode.Nodes.Add(new TreeNode { Name = "SmsAlertsStub", Text = "Email/SMS Alerts (coming v2.3)" });
+
+            this.modulesTreeView.Nodes.Add(monitorNode);
+            this.modulesTreeView.Nodes.Add(auditNode);
+            this.modulesTreeView.Nodes.Add(pluginsNode);
         }
 
         /// <summary>
@@ -918,15 +1139,24 @@ This means a faster processing but also that some obects may not be extracted.")
 
             // Split containers
             this.mainSplitContainer.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            this.mainSplitContainer.BorderStyle = BorderStyle.None;
+            this.mainSplitContainer.SplitterWidth = 3;
             this.modulesSplitContainer.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            this.modulesSplitContainer.BorderStyle = BorderStyle.None;
+            this.modulesSplitContainer.SplitterWidth = 2;
             this.modulesSplitContainer.Panel1.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
             this.modulesSplitContainer.Panel2.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
             this.secondaryLowerSplitContainer.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            this.secondaryLowerSplitContainer.BorderStyle = BorderStyle.None;
+            this.secondaryLowerSplitContainer.SplitterWidth = 2;
 
-            // Side panel width
-            if (this.modulesSplitContainer.SplitterDistance < 250)
+            // Form minimum size for all new tree nodes
+            this.MinimumSize = new Size(1200, 700);
+
+            // Side panel width — wider for many tree nodes
+            if (this.modulesSplitContainer.SplitterDistance < 280)
             {
-                this.modulesSplitContainer.SplitterDistance = 250;
+                this.modulesSplitContainer.SplitterDistance = 280;
             }
 
             // Style all buttons
@@ -934,15 +1164,17 @@ This means a faster processing but also that some obects may not be extracted.")
             {
                 if (ctrl is Button btn)
                 {
+                    btn.UseVisualStyleBackColor = false;
                     btn.FlatStyle = FlatStyle.Flat;
                     btn.FlatAppearance.BorderColor = Color.FromArgb(0x45, 0x47, 0x5A);
+                    btn.FlatAppearance.BorderSize = 1;
                     btn.BackColor = Color.FromArgb(0x45, 0x47, 0x5A);
                     btn.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
-                    btn.Font = new Font("Segoe UI", 11f, FontStyle.Regular);
+                    btn.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
                 }
                 else if (ctrl is GroupBox gb)
                 {
-                    gb.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    gb.ForeColor = Color.FromArgb(0x89, 0xB4, 0xFA);
                 }
                 else if (ctrl is CheckBox cb)
                 {
@@ -952,21 +1184,25 @@ This means a faster processing but also that some obects may not be extracted.")
                 {
                     combo.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
                     combo.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    combo.FlatStyle = FlatStyle.Flat;
                 }
                 else if (ctrl is TextBox tb)
                 {
                     tb.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
                     tb.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    tb.BorderStyle = BorderStyle.FixedSingle;
                 }
                 else if (ctrl is CheckedListBox clb)
                 {
                     clb.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
                     clb.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    clb.BorderStyle = BorderStyle.FixedSingle;
                 }
                 else if (ctrl is ListView lv)
                 {
                     lv.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
                     lv.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    lv.BorderStyle = BorderStyle.None;
                 }
             }
 
@@ -1052,6 +1288,21 @@ This means a faster processing but also that some obects may not be extracted.")
             treeViewToolTip(this.modulesTreeView.Nodes["ProtocolsNode"]?.Nodes["DhcpNode"], "DHCP lease activity, rogue DHCP server detection");
             treeViewToolTip(this.modulesTreeView.Nodes["ProtocolsNode"]?.Nodes["ArpNode"], "ARP spoofing and MITM detection alerts");
             treeViewToolTip(this.modulesTreeView.Nodes["AnomaliesNode"], "Statistical anomaly detection — bandwidth spikes, port scans, anomalous traffic");
+            treeViewToolTip(this.modulesTreeView.Nodes["ExfiltrationNode"], "Data exfiltration detection");
+            treeViewToolTip(this.modulesTreeView.Nodes["ExfiltrationNode"]?.Nodes["DnsExfilNode"], "DNS exfiltration alerts — base64/hex encoded data in queries");
+            treeViewToolTip(this.modulesTreeView.Nodes["ToolsNode"], "Utility tools for packet inspection");
+            treeViewToolTip(this.modulesTreeView.Nodes["ToolsNode"]?.Nodes["PacketHexNode"], "Hex dump viewer — paste raw hex or load captured bytes");
+            treeViewToolTip(this.modulesTreeView.Nodes["StatisticsNode"], "Statistical analysis and dashboards");
+            treeViewToolTip(this.modulesTreeView.Nodes["StatisticsNode"]?.Nodes["ProtocolStatsNode"], "Protocol distribution, top talkers, connection summaries");
+            treeViewToolTip(this.modulesTreeView.Nodes["SettingsNode"], "Application settings");
+            treeViewToolTip(this.modulesTreeView.Nodes["SettingsNode"]?.Nodes["SettingsThemeNode"], "Toggle between dark and light themes");
+            treeViewToolTip(this.modulesTreeView.Nodes["AuditLogNode"], "Activity and audit trail log");
+            treeViewToolTip(this.modulesTreeView.Nodes["PluginsNode"], "Plugin SDK for custom dissector modules (coming soon)");
+            treeViewToolTip(this.modulesTreeView.Nodes["TimelineNode"], "Chronological timeline of all detected events — color-coded by type");
+            treeViewToolTip(this.modulesTreeView.Nodes["FlowStatsNode"], "NetFlow-style traffic statistics — protocol distribution, top talkers, flow summaries");
+            treeViewToolTip(this.modulesTreeView.Nodes["TimelineNode"], "Chronological timeline of all detected events — color-coded by type");
+            treeViewToolTip(this.modulesTreeView.Nodes["FlowStatsNode"], "NetFlow-style traffic statistics — protocol distribution, top talkers, flow summaries");
+            treeViewToolTip(this.modulesTreeView.Nodes["BacnetAnalysisNode"], "BACnet network diagnostics — duplicate addressing, unreachable devices, broadcast storms, configuration issues with color-coded severity and fix recommendations");
 
             // ── Progress bar ──
             toolTip.SetToolTip(this.progressBar, "Processing progress — shows current file and percent complete");
@@ -1069,6 +1320,137 @@ This means a faster processing but also that some obects may not be extracted.")
             {
                 node.ToolTipText = text;
             }
+        }
+
+        // ──────────────────────────────────────
+        //  ENTERPRISE FEATURES
+        // ──────────────────────────────────────
+
+        private bool _isDarkTheme = true;
+
+        /// <summary>Handle keyboard shortcuts: Ctrl+S=Save, Ctrl+O=Load, Ctrl+P=PDF</summary>
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S) { SaveProject(); e.Handled = true; }
+            else if (e.Control && e.KeyCode == Keys.O) { LoadProject(); e.Handled = true; }
+            else if (e.Control && e.KeyCode == Keys.P) { ExportPdfReport(); e.Handled = true; }
+        }
+
+        /// <summary>Toggle between dark and light theme.</summary>
+        private void ToggleTheme()
+        {
+            _isDarkTheme = !_isDarkTheme;
+            if (_isDarkTheme)
+            {
+                ApplyProfessionalTheme();
+                AuditLog("Theme", "Switched to Dark theme");
+            }
+            else
+            {
+                // Revert to system defaults
+                this.BackColor = SystemColors.Control;
+                this.modulesTreeView.BackColor = SystemColors.Window;
+                this.modulesTreeView.ForeColor = SystemColors.WindowText;
+                foreach (Control ctrl in GetAllControls(this))
+                {
+                    if (ctrl is Button btn) { btn.BackColor = SystemColors.Control; btn.ForeColor = SystemColors.ControlText; btn.FlatStyle = FlatStyle.Standard; }
+                    else if (ctrl is GroupBox gb) gb.ForeColor = SystemColors.ControlText;
+                    else if (ctrl is CheckBox cb) cb.ForeColor = SystemColors.ControlText;
+                    else if (ctrl is ComboBox c) { c.BackColor = SystemColors.Window; c.ForeColor = SystemColors.WindowText; }
+                    else if (ctrl is TextBox t) { t.BackColor = SystemColors.Window; t.ForeColor = SystemColors.WindowText; }
+                    else if (ctrl is CheckedListBox cl) { cl.BackColor = SystemColors.Window; cl.ForeColor = SystemColors.WindowText; }
+                    else if (ctrl is ListView lv) { lv.BackColor = SystemColors.Window; lv.ForeColor = SystemColors.WindowText; }
+                }
+                AuditLog("Theme", "Switched to Light theme");
+            }
+        }
+
+        /// <summary>Save all analysis results to a portable JSON project file.</summary>
+        private void SaveProject()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "BruteShark Project (*.bsproj)|*.bsproj|All Files (*.*)|*.*",
+                DefaultExt = "bsproj",
+                Title = "Save BruteShark Project"
+            };
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(_networkContext, Newtonsoft.Json.Formatting.Indented);
+                File.WriteAllText(dialog.FileName, json);
+                AuditLog("Project", $"Saved project to {dialog.FileName}");
+                Utilities.ShowInfoMessageBox($"Project saved to:{Environment.NewLine}{dialog.FileName}");
+            }
+            catch (Exception ex)
+            {
+                AuditLog("Error", $"Save failed: {ex.Message}");
+                Utilities.ShowInfoMessageBox($"Save failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>Load analysis results from a .bsproj JSON project file.</summary>
+        private void LoadProject()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "BruteShark Project (*.bsproj)|*.bsproj|All Files (*.*)|*.*",
+                Title = "Load BruteShark Project"
+            };
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                var json = File.ReadAllText(dialog.FileName);
+                var loaded = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonUi.NetworkContext>(json);
+                if (loaded != null)
+                {
+                    _networkContext = loaded;
+                    // Repopulate all user controls from the loaded context
+                    foreach (var pw in _networkContext.Passwords) _passwordsUserControl.AddDataToTable(pw);
+                    foreach (var h in _networkContext.Hashes) _hashesUserControl.AddHash(h);
+                    foreach (var c in _networkContext.Connections)
+                        _networkMapUserControl.AddEdge(c.Source, c.Destination);
+                    foreach (var f in _networkContext.NetworkFiles) _filesUserControl.AddFile(f);
+                    foreach (var d in _networkContext.DnsMappings) _dnsResponseUserControl.AddNameMapping(d);
+                    foreach (var v in _networkContext.VoipCalls)
+                        _voipCallsUserControl.AddVoipCall(CommonUi.Casting.CastAnalyzerVoipCallToPresentationVoipCall(v));
+                    foreach (var j in _networkContext.Ja3Fingerprints) _ja3UserControl.AddDataToTable(j);
+                    foreach (var b in _networkContext.BeaconResults) _beaconsUserControl.AddDataToTable(b);
+                    foreach (var a in _networkContext.PayloadAlerts) _alertsUserControl.AddDataToTable(a);
+                    foreach (var d in _networkContext.DhcpLeases) _dhcpUserControl.AddDataToTable(d);
+                    foreach (var s in _networkContext.SshFingerprints) _sshUserControl.AddDataToTable(s);
+                    foreach (var h in _networkContext.HttpTransactions) _httpUserControl.AddDataToTable(h);
+                    foreach (var t in _networkContext.TlsCertificates) _tlsCertsUserControl.AddDataToTable(t);
+                    foreach (var m in _networkContext.DetectionMatches) _detectionMatchUserControl.AddDataToTable(m);
+                    foreach (var d in _networkContext.DnsExfilAlerts) _dnsExfilUserControl.AddDataToTable(d);
+                    AuditLog("Project", $"Loaded project: {dialog.FileName}");
+                    Utilities.ShowInfoMessageBox($"Project loaded.{Environment.NewLine}Passwords: {_networkContext.Passwords.Count}, Connections: {_networkContext.Connections.Count}, Alerts: {_networkContext.PayloadAlerts.Count}");
+                }
+            }
+            catch (Exception ex)
+            {
+                AuditLog("Error", $"Load failed: {ex.Message}");
+                Utilities.ShowInfoMessageBox($"Load failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>Write an entry to the audit trail.</summary>
+        private void AuditLog(string level, string message)
+        {
+            try { _auditLogUserControl?.AddEntry(level, message); } catch { }
+        }
+
+        /// <summary>Export a PDF report (delegates to HTML report since PDF library is optional).</summary>
+        private void ExportPdfReport()
+        {
+            var dialog = new FolderBrowserDialog { Description = "Select folder for PDF report export" };
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+
+            var htmlPath = CommonUi.FullHtmlReportGenerator.ExportFullHtmlReport(dialog.SelectedPath, _networkContext, "BruteShark_Report");
+            AuditLog("Export", $"Exported HTML report (PDF-ready) to {htmlPath}");
+            Utilities.ShowInfoMessageBox($"Report exported as HTML (PDF-ready).{Environment.NewLine}{htmlPath}{Environment.NewLine}{Environment.NewLine}Tip: Open in browser and File → Print → Save as PDF to create a PDF version.");
         }
 
     }

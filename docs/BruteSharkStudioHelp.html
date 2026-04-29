@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BruteShark Studio v2.0 — BruteShark Studio Pro v2.0.2</title>
+    <title>BruteShark Studio v2.0 — BruteShark Studio Pro v2.3.0</title>
     <style>
         :root {
             color-scheme: dark;
@@ -242,7 +242,7 @@
         <!-- ══════════════ SIDEBAR ══════════════ -->
         <aside class="sidebar">
             <h1>BruteShark Studio</h1>
-            <div class="version">Professional Edition v2.0.2</div>
+            <div class="version">Professional Edition v2.3.0</div>
             <p class="sub">Network Forensic Analysis Toolkit — Windows Desktop + CLI</p>
 
             <input type="text" id="search-box" placeholder="🔍 Search help topics…" oninput="searchHelp()">
@@ -291,6 +291,20 @@
                     <a href="#cli-examples">CLI Examples</a>
                 </div>
                 <div class="nav-group">
+                    <h2>Enterprise Features</h2>
+                    <a href="#ent-hex">Hex Viewer</a>
+                    <a href="#ent-save">Save / Load Projects</a>
+                    <a href="#ent-stats">Protocol Statistics</a>
+                    <a href="#ent-timeline">Timeline View</a>
+                    <a href="#ent-flowstats">Flow Statistics</a>
+                    <a href="#ent-bacnet">BACnet Analysis</a>
+                    <a href="#ent-audit">Audit Log</a>
+                    <a href="#ent-theme">Theme Toggle</a>
+                    <a href="#ent-shortcuts">Keyboard Shortcuts</a>
+                    <a href="#ent-search">Search / Filter</a>
+                    <a href="#ent-plugins">Plugin SDK</a>
+                </div>
+                <div class="nav-group">
                     <h2>Install &amp; Build</h2>
                     <a href="#installer">Installer</a>
                     <a href="#build">Build from Source</a>
@@ -304,7 +318,7 @@
 
             <!-- ── HERO ── -->
             <section class="hero" id="overview">
-                <h2>🦁 BruteShark Studio v2.0</h2>
+                <h2>🦁 BruteShark Studio v2.2</h2>
                 <p>
                     A professional-grade network forensic analysis platform for Windows.
                     Extract credentials, detect C2 beacons, fingerprint TLS &amp; SSH, identify anomalies,
@@ -327,57 +341,55 @@
                     </div>
                     <div class="summary-card">
                         <h3>📊 Multi-Format Export</h3>
-                        <p>HTML, PDF, JSON, CSV, STIX 2.0, MISP, Zeek logs, Hashcat, IOC, timeline</p>
+                        <p>HTML, PDF, JSON, CSV, STIX 2.0, MISP, Zeek logs, Hashcat, IOC, timeline — 18 export formats</p>
                     </div>
                     <div class="summary-card">
-                        <h3>🌐 REST API</h3>
-                        <p>localhost:8089 — programmatic access to results, status, IOCs, and reports</p>
+                        <h3>💾 Session Persistence</h3>
+                        <p>Save/load projects (.bsproj), keyboard shortcuts (Ctrl+S/O/P), audit logging</p>
                     </div>
                     <div class="summary-card">
                         <h3>🔨 Hashcat Built-In</h3>
-                        <p>Bundled Hashcat with 30+ rule files, system PATH integration via installer</p>
+                        <p>Bundled Hashcat v6.2.6 with 30+ rule files, system PATH integration</p>
                     </div>
                 </div>
             </section>
 
             <!-- ── WHAT'S NEW ── -->
             <section class="section" id="whats-new">
-                <h2>🚀 What's New in v2.0</h2>
+                <h2>🚀 What's New in v2.2</h2>
+                <div class="callout">
+                    <strong>v2.2 — April 2026</strong>
+                    Enterprise features, session persistence, audit logging, hex viewer, protocol stats, plugin SDK, and comprehensive bug fixes.
+                </div>
                 <div class="two-col">
                     <div>
-                        <h3>New Analysis Modules</h3>
+                        <h3>New Enterprise Features (v2.2)</h3>
                         <ul>
-                            <li><strong>Beacon Detection</strong> — statistical C2 beacon hunting</li>
-                            <li><strong>JA3 Fingerprinting</strong> — TLS client fingerprinting</li>
-                            <li><strong>Flow Aggregation</strong> — NetFlow-style traffic summary</li>
-                            <li><strong>DNS Exfiltration</strong> — detect data tunneling via DNS</li>
-                            <li><strong>Payload Pattern</strong> — regex-based payload scanning</li>
-                            <li><strong>ARP Spoofing</strong> — ARP cache poisoning detection</li>
-                            <li><strong>SSH Fingerprint</strong> — host key extraction &amp; MITM detection</li>
-                            <li><strong>HTTP Metadata</strong> — request/response metadata extraction</li>
-                            <li><strong>SMB Dissector</strong> — NTLM over SMB &amp; named pipes</li>
-                            <li><strong>DHCP Snooping</strong> — rogue DHCP &amp; lease tracking</li>
-                            <li><strong>TLS Certificate</strong> — X.509 cert extraction &amp; analysis</li>
-                            <li><strong>Anomaly Detection</strong> — statistical baselining</li>
+                            <li><strong>Save / Load Projects</strong> — .bsproj JSON persistence with keyboard shortcuts</li>
+                            <li><strong>Packet Hex Viewer</strong> — Wireshark-style hex dump with offset/HEX/ASCII panels</li>
+                            <li><strong>Protocol Statistics Dashboard</strong> — bar charts, top talkers, summaries</li>
+                            <li><strong>Audit Logging</strong> — timestamped activity trail for chain-of-custody</li>
+                            <li><strong>Theme Toggle</strong> — one-click dark/light theme switching</li>
+                            <li><strong>Keyboard Shortcuts</strong> — Ctrl+S/O/P for save/load/PDF export</li>
+                            <li><strong>Plugin SDK</strong> — IPlugin interface for custom dissector modules</li>
+                            <li><strong>PDF Export</strong> — HTML report export with print-to-PDF guidance</li>
                         </ul>
                     </div>
                     <div>
-                        <h3>New Features</h3>
+                        <h3>Bug Fixes (v2.2)</h3>
                         <ul>
-                            <li><strong>HTML Forensic Reports</strong> — dark-themed, collapsible, searchable</li>
-                            <li><strong>PDF Reports</strong> — self-contained, no dependencies</li>
-                            <li><strong>Zeek-Format Logs</strong> — conn.log, dns.log, ssl.log, http.log</li>
-                            <li><strong>STIX 2.0 / MISP</strong> — threat intelligence sharing</li>
-                            <li><strong>REST API</strong> — programmatic access on port 8089</li>
-                            <li><strong>AbuseIPDB Integration</strong> — IP reputation scoring</li>
-                            <li><strong>YARA Rule Support</strong> — load external YARA rules</li>
-                            <li><strong>SQLite Case DB</strong> — persistent case management</li>
-                            <li><strong>Session Viewer</strong> — hex dump with protocol annotations</li>
-                            <li><strong>Professional Dark Theme</strong> — modern UI styling</li>
-                            <li><strong>Tooltips</strong> — context help on every control</li>
-                            <li><strong>Desktop &amp; Start Menu Shortcuts</strong></li>
+                            <li><strong>SMB/ARP routing fixed</strong> — tabs now populate correctly (were hidden in Alerts)</li>
+                            <li><strong>Duplicate PayloadAlert resolved</strong> — anomaly tracking now works</li>
+                            <li><strong>DetectionRuleEngine UI wired</strong> — matches now visible in Rule Matches tab</li>
+                            <li><strong>DNS ExfiltrationModule wired</strong> — previously had zero UI surface</li>
+                            <li><strong>Export coverage expanded</strong> — SSH, DHCP, HTTP, TLS, PayloadAlerts, DNS Exfil now exported</li>
                         </ul>
                     </div>
+                </div>
+
+                <div class="callout tip">
+                    <strong>📋 v2.0 Features (already included)</strong>
+                    Previously added in v2.0: 16 analysis modules, 19 credential parsers, C2 beacon detection, JA3 fingerprinting, YARA rules, HTML/PDF reports, Zeek logs, STIX/MISP export, REST API, AbuseIPDB integration, SQLite case DB, professional dark theme, tooltips on all controls.
                 </div>
             </section>
 
@@ -815,6 +827,165 @@ dotnet run --project .\BruteSharkStudio\BruteSharkDesktop\BruteSharkDesktop.cspr
 dotnet run --project .\BruteSharkStudio\BruteSharkCli\BruteSharkCli.csproj -- --help</code></pre>
             </section>
 
+            <!-- ── ENTERPRISE FEATURES ── -->
+            <section class="section" id="ent-hex">
+                <h2>🔢 Packet Hex Viewer</h2>
+                <p>The <strong>Hex Viewer</strong> (under Tools in the module tree) provides a Wireshark-style hex dump display:</p>
+                <ul>
+                    <li><strong>Paste hex bytes</strong> — type or paste raw hex (e.g., <code>48 65 6C 6C 6F</code>) and click <strong>Parse</strong></li>
+                    <li><strong>Offset column</strong> — 8-digit hex offset for each line</li>
+                    <li><strong>HEX panel</strong> — formatted byte display with 16 bytes per row</li>
+                    <li><strong>ASCII panel</strong> — printable character representation (dot for non-printable)</li>
+                    <li><strong>Synced scrolling</strong> — HEX and ASCII panels scroll together</li>
+                </ul>
+                <p>Useful for manually inspecting packet payloads or unknown protocol data.</p>
+            </section>
+
+            <section class="section" id="ent-save">
+                <h2>💾 Save / Load Projects</h2>
+                <p>Persist your entire investigation as a portable <code>.bsproj</code> (BruteShark Project) file:</p>
+                <ul>
+                    <li><strong>Save Project</strong> — <kbd>Ctrl</kbd> + <kbd>S</kbd> — serializes all analysis results to JSON</li>
+                    <li><strong>Load Project</strong> — <kbd>Ctrl</kbd> + <kbd>O</kbd> — restores a previous session with all data</li>
+                    <li>Saves: passwords, hashes, connections, files, DNS mappings, VoIP calls, JA3 fingerprints, beacons, alerts, DHCP, SSH, HTTP, TLS certs, DNS exfil alerts, and detection matches</li>
+                    <li>All result views are repopulated automatically on load</li>
+                    <li>Ideal for long-running investigations, evidence archival, and team collaboration</li>
+                </ul>
+                <div class="callout tip">
+                    <strong>💡 Pro Tip</strong>
+                    Save your project before clearing results or closing the app. Project files are human-readable JSON and can be inspected with any text editor.
+                </div>
+            </section>
+
+            <section class="section" id="ent-stats">
+                <h2>📊 Protocol Statistics Dashboard</h2>
+                <p>The <strong>Protocol Stats</strong> view (under Statistics in the module tree) provides at-a-glance traffic analysis:</p>
+                <ul>
+                    <li><strong>Protocol Distribution Bar Chart</strong> — visual breakdown of protocols observed (TCP, HTTP, TLS, DHCP, SSH, etc.)</li>
+                    <li><strong>Top Talkers Table</strong> — 20 most active source/destination IP pairs</li>
+                    <li><strong>Connection Summary</strong> — total connections, unique hosts, password count</li>
+                    <li><strong>Percentage breakdown</strong> — each protocol shown with count and percentage</li>
+                </ul>
+                <p>Automatically updates when you click the node. Great for SOC analysts who need quick traffic profiling.</p>
+            </section>
+
+            <section class="section" id="ent-audit">
+                <h2>📝 Audit Log</h2>
+                <p>The <strong>Audit Log</strong> (bottom of the module tree) maintains a timestamped activity trail for forensic accountability:</p>
+                <ul>
+                    <li>Records: app start, file additions, analysis start/end, exports, result clears, theme changes, project saves/loads, errors</li>
+                    <li><strong>Latest-first ordering</strong> — newest entries at the top</li>
+                    <li><strong>Double-click to copy</strong> — copy any log entry to clipboard</li>
+                    <li><strong>Clear button</strong> — resets the audit trail</li>
+                    <li>Entries capped at 5,000 to prevent memory bloat</li>
+                </ul>
+                <p>Essential for chain-of-custody documentation in forensic investigations.</p>
+            </section>
+
+            <section class="section" id="ent-theme">
+                <h2>🎨 Theme Toggle</h2>
+                <p>Switch between the professional <strong>Dark Theme</strong> and the <strong>Windows Light Theme</strong>:</p>
+                <ul>
+                    <li>Click <strong>Toggle Dark/Light Theme</strong> under Settings in the module tree</li>
+                    <li>Dark theme: #1E1E2E background, Catppuccin-inspired palette (default)</li>
+                    <li>Light theme: Standard Windows system colors</li>
+                    <li>All controls (buttons, text boxes, combo boxes, checkboxes, list views) update instantly</li>
+                    <li>Theme change is logged in the Audit Log</li>
+                </ul>
+            </section>
+
+            <section class="section" id="ent-shortcuts">
+                <h2>⌨️ Keyboard Shortcuts</h2>
+                <table>
+                    <tr><th>Shortcut</th><th>Action</th></tr>
+                    <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Save current project as .bsproj file</td></tr>
+                    <tr><td><kbd>Ctrl</kbd> + <kbd>O</kbd></td><td>Load a previously saved project</td></tr>
+                    <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Export PDF-ready HTML report</td></tr>
+                </table>
+                <p>These shortcuts work anywhere in the main window. The form has KeyPreview enabled for global keyboard capture.</p>
+            </section>
+
+            <section class="section" id="ent-search">
+                <h2>🔍 Search / Filter Results</h2>
+                <p>Quickly find data in any result view:</p>
+                <ul>
+                    <li><strong>HTML Help Search</strong> — the sidebar search box filters help topics in real-time (type 2+ characters)</li>
+                    <li><strong>DataGridView Filtering</strong> — all result tables support column sorting by clicking headers</li>
+                    <li><strong>Module-specific views</strong> — each node opens a filtered, context-appropriate view</li>
+                    <li><strong>Session hex viewer</strong> — search within reconstructed session payloads</li>
+                </ul>
+            </section>
+
+            <section class="section" id="ent-plugins">
+                <h2>🔌 Plugin SDK</h2>
+                <p>BruteShark Studio supports custom dissector plugins via the <code>IPlugin</code> interface:</p>
+                <pre><code>public interface IPlugin
+{
+    string Name { get; }           // Human-readable name
+    string Version { get; }        // Plugin version
+    string Description { get; }    // What it does
+    bool Initialize();             // Called on plugin load
+    void Shutdown();               // Called on plugin unload
+}</code></pre>
+                <p>Plugin SDK documentation and full API coming in v2.3. Register your interest on GitHub Issues.</p>
+            </section>
+
+            <!-- Enterprise: Timeline -->
+            <section class="section" id="ent-timeline">
+                <h2>📅 Timeline View</h2>
+                <p>Access via <strong>Timeline</strong> in the module tree:</p>
+                <ul>
+                    <li>14 event types displayed chronologically</li>
+                    <li>Color-coded rows by type: Password (red), Hash (orange), File (green), Beacon (pink), DNS (blue), etc.</li>
+                    <li>Columns: Time, Type, Source, Destination, Summary</li>
+                    <li>Export Timeline CSV button at top</li>
+                    <li>Sortable by clicking column headers</li>
+                </ul>
+            </section>
+
+            <!-- Enterprise: Flow Statistics -->
+            <section class="section" id="ent-flowstats">
+                <h2>📊 Flow Statistics</h2>
+                <p>Access via <strong>Flow Statistics</strong> in the module tree:</p>
+                <ul>
+                    <li><strong>Protocol Distribution</strong> — protocol name, packet count, byte count, percentage</li>
+                    <li><strong>Top Talkers</strong> — source IP, destination IP, packet count, byte count</li>
+                    <li><strong>Flow Summary</strong> — total flows, unique sources, unique destinations, data size</li>
+                    <li>Catppuccin color palette for protocol rows</li>
+                    <li>Export CSV button for full report</li>
+                </ul>
+            </section>
+
+            <!-- Enterprise: BACnet Analysis -->
+            <section class="section" id="ent-bacnet">
+                <h2>🏗️ BACnet Network Analysis</h2>
+                <p>Access via <strong>BACnet Analysis</strong> in the module tree. Click after running PCAP analysis.</p>
+                <h3>Health Dashboard</h3>
+                <ul>
+                    <li><strong>BACnet Health Score</strong> — percentage with green (≥80%), yellow (≥60%), red (&lt;60%)</li>
+                    <li><strong>Sub-scores</strong> — Connectivity, Performance, Integrity</li>
+                    <li><strong>Statistics</strong> — devices, subnets, BACnet networks, peak traffic rate, trend objects, forwarded NPDU</li>
+                </ul>
+                <h3>37 Diagnostic Checks</h3>
+                <p>Based on ASHRAE 135.1 / OptigoVN / BACPro methodology:</p>
+                <ul>
+                    <li>Duplicate Addressing (4 checks): Device Address, Instance Number, Network Number, BBMD</li>
+                    <li>Unreachable Devices (2 checks): Fully, Partially</li>
+                    <li>Router Issues (2 checks): Backpressure, Rejecting Messages</li>
+                    <li>Error Messages (4 checks): Interoperability, Operational, Programming, Unknown Type</li>
+                    <li>Excessive Traffic (7 checks): Broadcast, COV, Max Master, Read Rate, Write Rate, Token Hold, TrendLog</li>
+                    <li>MS/TP Health (4 checks): Token Time, Devices/Segment, Lost Tokens, Addressing Gap</li>
+                    <li>Other (5 checks): Checksum, Global Discovery, Slow Response, Unacked, Security</li>
+                </ul>
+                <p>Each check shows <strong>✅ Pass</strong>, <strong>⚠️ Warning</strong>, or <strong>❌ Failed</strong> with color-coded rows and fix recommendations.</p>
+                <h3>Device Browser</h3>
+                <p>Table of all detected BACnet devices with Device ID, IP, MAC, Type, Vendor, Status (Online/Offline/Intermittent), First/Last Seen. Filterable and sortable.</p>
+                <h3>Traffic Charts</h3>
+                <p>Protocol Distribution bar chart + Top Talkers bar chart with dark theme.</p>
+                <h3>Export</h3>
+                <p>CSV export with all diagnostics + offenders list. PDF-ready HTML report via browser print.</p>
+            </section>
+
             <!-- ── TROUBLESHOOTING ── -->
             <section class="section" id="troubleshooting">
                 <h2>🔧 Troubleshooting</h2>
@@ -846,7 +1017,7 @@ dotnet run --project .\BruteSharkStudio\BruteSharkCli\BruteSharkCli.csproj -- --
                 </ul>
 
                 <div class="footer-note">
-                    <strong>BruteShark Studio v2.0.2</strong> — Professional Edition<br>
+                    <strong>BruteShark Studio v2.3.0</strong> — Professional Edition<br>
                     Repository: <a href="https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro" style="color: var(--accent)">github.com/Ayman-Elbanhawy/BruteSharkStudioPro</a><br>
                     License: GNU General Public License v3.0<br>
                     Developer: Ayman Elbanhawy / <a href="https://softwaremile.com" style="color: var(--accent)">softwaremile.com</a>

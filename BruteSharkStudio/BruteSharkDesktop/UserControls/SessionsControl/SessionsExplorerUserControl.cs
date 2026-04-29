@@ -33,6 +33,62 @@ namespace BruteSharkDesktop
 
             // Initialize the filter columns Combo Box.
             InitializeColumnsNames();
+
+            // Apply dark professional theme
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var bg = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            var panel = Color.FromArgb(0x25, 0x25, 0x40);
+            var text = Color.FromArgb(0xCD, 0xD6, 0xF4);
+            var border = Color.FromArgb(0x45, 0x47, 0x5A);
+            var accent = Color.FromArgb(0x89, 0xB4, 0xFA);
+
+            this.BackColor = bg;
+
+            // Split containers
+            this.mainSplitContainer.BackColor = border;
+            this.mainSplitContainer.Panel1.BackColor = bg;
+            this.mainSplitContainer.Panel2.BackColor = bg;
+            this.bottomSplitContainer.BackColor = border;
+
+            // DataGridView
+            sessionsDataGridView.BackgroundColor = panel;
+            sessionsDataGridView.ForeColor = text;
+            sessionsDataGridView.GridColor = border;
+            sessionsDataGridView.BorderStyle = BorderStyle.None;
+            sessionsDataGridView.DefaultCellStyle.BackColor = panel;
+            sessionsDataGridView.DefaultCellStyle.ForeColor = text;
+            sessionsDataGridView.DefaultCellStyle.SelectionBackColor = border;
+            sessionsDataGridView.DefaultCellStyle.SelectionForeColor = text;
+            sessionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = border;
+            sessionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = text;
+            sessionsDataGridView.EnableHeadersVisualStyles = false;
+            sessionsDataGridView.RowHeadersVisible = false;
+            sessionsDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCellsExceptHeader;
+            sessionsDataGridView.ScrollBars = ScrollBars.Both;
+
+            // Filter group box
+            filterSessionsGroupBox.ForeColor = text;
+            filterSessionsGroupBox.BackColor = bg;
+
+            // Filter controls
+            filterTextBox.BackColor = panel;
+            filterTextBox.ForeColor = text;
+            filterTextBox.BorderStyle = BorderStyle.FixedSingle;
+            columnsComboBox.BackColor = panel;
+            columnsComboBox.ForeColor = text;
+
+            // Buttons
+            foreach (var btn in new[] { filterButton, clearFilterButton })
+            {
+                btn.BackColor = border;
+                btn.ForeColor = text;
+                btn.FlatStyle = FlatStyle.Flat;
+                btn.FlatAppearance.BorderColor = accent;
+            }
         }
 
         private void InitializeColumnsNames()

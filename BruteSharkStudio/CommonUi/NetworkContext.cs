@@ -35,6 +35,9 @@ namespace CommonUi
         public List<PcapAnalyzer.NetworkFile> NetworkFiles { get; private set; }
         public HashSet<PcapAnalyzer.VoipCall> VoipCalls { get; private set; }
 
+        // Enterprise additions
+        public List<PcapAnalyzer.DnsExfilAlert> DnsExfilAlerts { get; private set; }
+
         public NetworkContext()
         {
             OpenPorts = new Dictionary<string, HashSet<int>>();
@@ -53,6 +56,7 @@ namespace CommonUi
             Passwords = new List<PcapAnalyzer.NetworkPassword>();
             NetworkFiles = new List<PcapAnalyzer.NetworkFile>();
             VoipCalls = new HashSet<PcapAnalyzer.VoipCall>();
+            DnsExfilAlerts = new List<PcapAnalyzer.DnsExfilAlert>();
         }
 
         public void HandleJa3Fingerprint(PcapAnalyzer.Ja3Fingerprint fingerprint)
@@ -113,6 +117,11 @@ namespace CommonUi
         public void AddTlsCertificate(PcapAnalyzer.TlsCertificate cert)
         {
             TlsCertificates.Add(cert);
+        }
+
+        public void AddDnsExfilAlert(PcapAnalyzer.DnsExfilAlert alert)
+        {
+            DnsExfilAlerts.Add(alert);
         }
 
         public void HandleNetworkConection(PcapAnalyzer.NetworkConnection networkConnection)
@@ -180,13 +189,6 @@ namespace CommonUi
                         domainUsers.Add(@$"{domain}\{user}");
                 }
             }
-
-            // Add JA3 fingerprint info for this IP
-            var ja3List = Ja3Fingerprints
-                .Where(j => j.SourceIp == ipAddress)
-                .Select(j => j.Ja3Hash)
-                .Distinct()
-                .ToList();
 
             return new NetworkNode()
             {

@@ -58,6 +58,30 @@ namespace BruteSharkDesktop
             this.mainDataGridView.DataSource = _dataGridViewBindingSource;
             this.mainDataGridView.AutoGenerateColumns = true;
             this.mainDataGridView.AllowUserToAddRows = false;
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var panel = Color.FromArgb(0x25, 0x25, 0x40);
+            var text = Color.FromArgb(0xCD, 0xD6, 0xF4);
+            var border = Color.FromArgb(0x45, 0x47, 0x5A);
+
+            this.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            mainDataGridView.BackgroundColor = panel;
+            mainDataGridView.ForeColor = text;
+            mainDataGridView.GridColor = border;
+            mainDataGridView.BorderStyle = BorderStyle.None;
+            mainDataGridView.DefaultCellStyle.BackColor = panel;
+            mainDataGridView.DefaultCellStyle.ForeColor = text;
+            mainDataGridView.DefaultCellStyle.SelectionBackColor = border;
+            mainDataGridView.DefaultCellStyle.SelectionForeColor = text;
+            mainDataGridView.ColumnHeadersDefaultCellStyle.BackColor = border;
+            mainDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = text;
+            mainDataGridView.EnableHeadersVisualStyles = false;
+            mainDataGridView.RowHeadersVisible = false;
+            mainDataGridView.ScrollBars = ScrollBars.Both;
+            mainDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCellsExceptHeader;
         }
 
         public GenericTableUserControl(IEnumerable<object> data) : this()

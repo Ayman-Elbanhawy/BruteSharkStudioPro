@@ -16,6 +16,37 @@ namespace BruteSharkDesktop
         public SessionViewerUserControl()
         {
             InitializeComponent();
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            var bg = Color.FromArgb(0x1E, 0x1E, 0x2E);
+            var panel = Color.FromArgb(0x25, 0x25, 0x40);
+            var text = Color.FromArgb(0xCD, 0xD6, 0xF4);
+            var border = Color.FromArgb(0x45, 0x47, 0x5A);
+
+            this.BackColor = bg;
+
+            // Split container
+            mainSplitContainer.BackColor = border;
+            mainSplitContainer.Panel1.BackColor = bg;
+            mainSplitContainer.Panel2.BackColor = bg;
+
+            // Rich text box (hex viewer)
+            sessionDataRichTextBox.BackColor = panel;
+            sessionDataRichTextBox.ForeColor = text;
+            sessionDataRichTextBox.BorderStyle = BorderStyle.None;
+
+            // Group box
+            sessionDetailsGroupBox.ForeColor = text;
+            sessionDetailsGroupBox.BackColor = bg;
+
+            // Labels
+            foreach (var lbl in new[] { sourceIpLabel, destinationIpLabel, sourcePortLabel, destinationPortLabel, dataLengthLabel })
+            {
+                lbl.ForeColor = text;
+            }
         }
 
         public void SetSessionView(TransportLayerSession session)

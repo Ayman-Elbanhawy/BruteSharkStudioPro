@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>Screenshot Capture</title>
+<style>
+body{background:#1e1e2e;color:#cdd6f4;font-family:Segoe UI;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px;margin:0}
+button{background:#45475a;color:#cdd6f4;border:1px solid #89b4fa;padding:14px 28px;font-size:16px;border-radius:8px;cursor:pointer}
+button:hover{background:#585b70}
+pre{background:#11111b;padding:16px;border-radius:8px}
+#r img{max-width:95%;margin-top:20px;border:2px solid #89b4fa;border-radius:8px}
+#r a{display:block;margin-top:10px;color:#89b4fa;font-size:16px}
+</style></head>
+<body>
+<h1>📸 Screenshot Capture</h1>
+<p>Click to capture. After capture, right-click image → Save As to:</p>
+<pre>C:\WireSharkTools\BruteSharkPro\readme_media\BruteSharkDesktopStudio_Main_v2.png</pre>
+<button onclick="capture()">Capture Screen</button>
+<div id="r"></div>
+<script>
+async function capture(){
+  try{
+    const s=await navigator.mediaDevices.getDisplayMedia({video:true});
+    const t=s.getVideoTracks()[0];
+    const c=new ImageCapture(t);
+    const b=await c.takePhoto();
+    const u=URL.createObjectURL(b);
+    const img=document.createElement('img');img.src=u;
+    const a=document.createElement('a');a.href=u;a.download='BruteSharkDesktopStudio_Main_v2.png';a.textContent='⬇ Download Screenshot (save to readme_media folder)';
+    document.getElementById('r').append(img,a);
+    t.stop();
+  }catch(e){alert(e.message)}
+}
+</script>
+</body></html>

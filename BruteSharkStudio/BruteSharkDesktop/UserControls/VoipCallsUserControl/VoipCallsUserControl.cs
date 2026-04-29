@@ -27,6 +27,13 @@ namespace BruteSharkDesktop
             _voipCallsTableUserControl.SetTableDataType(typeof(CommonUi.VoipCall));
             this.Controls.Clear();
             this.Controls.Add(_voipCallsTableUserControl);
+
+            ApplyDarkTheme();
+        }
+
+        private void ApplyDarkTheme()
+        {
+            this.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
         }
 
         public void AddVoipCall(CommonUi.VoipCall voipCall)

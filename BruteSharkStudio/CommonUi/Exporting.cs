@@ -142,6 +142,73 @@ namespace CommonUi
             return filePath;
         }
 
+        // Enterprise: Export SSH fingerprints
+        public static string ExportSshFingerprints(string dirPath, List<PcapAnalyzer.SshServerFingerprint> fingerprints)
+        {
+            if (fingerprints == null || fingerprints.Count == 0)
+                return null;
+
+            return ExportToFile(dirPath, "BruteShark SSH Fingerprints.json", fingerprints.Cast<object>());
+        }
+
+        // Enterprise: Export DHCP leases
+        public static string ExportDhcpLeases(string dirPath, List<PcapAnalyzer.DhcpLease> leases)
+        {
+            if (leases == null || leases.Count == 0)
+                return null;
+
+            return ExportToFile(dirPath, "BruteShark DHCP Leases.json", leases.Cast<object>());
+        }
+
+        // Enterprise: Export HTTP transactions
+        public static string ExportHttpTransactions(string dirPath, List<PcapAnalyzer.HttpTransaction> transactions)
+        {
+            if (transactions == null || transactions.Count == 0)
+                return null;
+
+            return ExportToFile(dirPath, "BruteShark HTTP Transactions.json", transactions.Cast<object>());
+        }
+
+        // Enterprise: Export Payload Alerts
+        public static string ExportPayloadAlerts(string dirPath, List<PcapAnalyzer.PayloadAlert> alerts)
+        {
+            if (alerts == null || alerts.Count == 0)
+                return null;
+
+            return ExportToFile(dirPath, "BruteShark Payload Alerts.json", alerts.Cast<object>());
+        }
+
+        // Enterprise: Export TLS Certificates
+        public static string ExportTlsCertificates(string dirPath, List<PcapAnalyzer.TlsCertificate> certs)
+        {
+            if (certs == null || certs.Count == 0)
+                return null;
+
+            var lines = new List<string>();
+            lines.Add("# TLS Certificates - BruteShark Studio Export");
+            lines.Add($"# Timestamp: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            lines.Add("# Subject | Issuer | Serial | Not_Before | Not_After | Server_IP:Port | Fingerprint | Suspicious");
+
+            foreach (var c in certs)
+            {
+                lines.Add($"{c.Subject} | {c.Issuer} | {c.SerialNumber} | {c.NotBefore:yyyy-MM-dd HH:mm} | {c.NotAfter:yyyy-MM-dd HH:mm} | " +
+                    $"{c.ServerIp}:{c.ServerPort} | {c.Fingerprint} | {c.IsSuspicious}");
+            }
+
+            var path = GetUniqueFilePath(Path.Combine(dirPath, "BruteShark TLS Certificates.txt"));
+            File.WriteAllLines(path, lines);
+            return path;
+        }
+
+        // Enterprise: Export DNS Exfiltration Alerts
+        public static string ExportDnsExfilAlerts(string dirPath, List<PcapAnalyzer.DnsExfilAlert> alerts)
+        {
+            if (alerts == null || alerts.Count == 0)
+                return null;
+
+            return ExportToFile(dirPath, "BruteShark DNS Exfil Alerts.json", alerts.Cast<object>());
+        }
+
         public static string ReplaceInvalidFileNameChars(string filename, char newChar)
         {
             return string.Join(newChar.ToString(), filename.Split(Path.GetInvalidFileNameChars()));

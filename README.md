@@ -1,13 +1,13 @@
-# 🦁 BruteShark Studio v2.0
+# 🦁 BruteShark Studio v2.3
 
 **Professional Network Forensic Analysis Toolkit for Windows**
 
-[![Version](https://img.shields.io/badge/version-2.0.2-blue)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/releases)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/releases)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64%20%7C%20x86-lightgrey)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green)](LICENSE)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro)
 
-BruteShark Studio is a desktop-focused network forensic analysis platform for reviewing packet captures, extracting credentials and authentication hashes, detecting C2 beacons, fingerprinting TLS/SSH, identifying anomalies, reconstructing TCP/UDP sessions, exporting investigation artifacts in 14 formats, and running Hashcat — all from an intuitive dark-themed desktop interface or automated CLI pipeline.
+BruteShark Studio v2.3 is a desktop-focused network forensic analysis platform for reviewing packet captures, extracting credentials and authentication hashes, detecting C2 beacons, fingerprinting TLS/SSH, identifying anomalies, reconstructing TCP/UDP sessions, exporting investigation artifacts in 18 formats, saving/loading projects, and running Hashcat — all from an intuitive dark-themed desktop interface or automated CLI pipeline.
 
 Repository: <https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro>
 
@@ -51,6 +51,80 @@ Bundles Hashcat v6.2.6 with 30+ rule files. Adds Hashcat to system PATH during e
 | CLI (GIF) | ![CLI](readme_media/BruteSharkCli.gif) |
 
 </details>
+
+---
+
+## 🏢 New in v2.2 — Enterprise Features
+
+### 💾 Session Persistence
+- **Save Project** (<kbd>Ctrl</kbd>+<kbd>S</kbd>) — serializes all results to `.bsproj` JSON
+- **Load Project** (<kbd>Ctrl</kbd>+<kbd>O</kbd>) — restores full investigation state
+- Saves: passwords, hashes, connections, files, DNS, VoIP, JA3, beacons, alerts, DHCP, SSH, HTTP, TLS, DNS exfil, detection matches
+
+### 🔢 Packet Hex Viewer
+- Wireshark-style hex dump with offset/HEX/ASCII panels
+- Paste raw hex or text for parsing
+- Synced scrolling between HEX and ASCII views
+
+### 📊 Protocol Statistics Dashboard
+- Protocol distribution bar chart with percentages
+- Top 20 talkers table (source → destination pairs)
+- Connection summary (total connections, unique hosts)
+
+### 📝 Audit Logging
+- Timestamped activity trail (5,000 entry cap)
+- Tracks: app start, file loads, analysis, exports, clears, theme changes, errors
+- Double-click entries to copy to clipboard
+- Essential for forensic chain-of-custody
+
+### 🎨 Theme Toggle
+- One-click dark ↔ light theme switching via Settings tree node
+- Dark: Catppuccin-inspired (#1E1E2E)
+- Light: Windows system colors
+
+### ⌨️ Keyboard Shortcuts
+| Shortcut | Action |
+|----------|--------|
+| <kbd>Ctrl</kbd>+<kbd>S</kbd> | Save project (.bsproj) |
+| <kbd>Ctrl</kbd>+<kbd>O</kbd> | Load project |
+| <kbd>Ctrl</kbd>+<kbd>P</kbd> | Export PDF-ready report |
+
+### 🔌 Plugin SDK
+- `IPlugin` interface for custom dissector modules
+- Name, Version, Description, Initialize(), Shutdown()
+- Full API documentation coming in v2.3
+
+### 🏗️ BACnet Analysis Tab (OptigoVN-Style)
+- **37 diagnostic checks** with Pass✅/Warn⚠️/Fail❌ color coding
+- Health score + 3 sub-scores (Connectivity, Performance, Integrity)
+- Device Browser with IP, MAC, Type, Vendor, Status
+- Traffic by Source bar charts (native GDI+)
+- Protocol Distribution visualization
+- Offenders panel with fix recommendations
+- CSV + PDF-ready HTML export
+- Based on ASHRAE 135.1 / OptigoVN / BACPro methodology
+
+### 📅 Timeline View
+- Chronological event timeline — 14 event types color-coded
+- Export timeline as CSV
+
+### 📊 Flow Statistics
+- Protocol distribution with packet/byte counts
+- Top 30 talkers (source → destination pairs)
+- Flow summary (total flows, unique sources/destinations, data size)
+
+### 🎨 Full Dark Theme
+- All 28+ user controls themed (#1E1E2E / Catppuccin palette)
+- ScrollBars on every DataGridView
+- Help button always visible (docked bottom-left)
+- Sessions, Hashes, Network Map, DNS, VoIP, Files — all dark
+
+### 🐛 Bug Fixes
+- SMB/ARP tabs now populate (were routing to Alerts only)
+- Duplicate PayloadAlert handler resolved — anomaly tracking works
+- DetectionRuleEngine results visible in UI (Rule Matches tab)
+- DNS ExfiltrationModule fully wired to UI and export
+- Export coverage for SSH, DHCP, HTTP, TLS, PayloadAlerts, DNS Exfil
 
 ---
 
@@ -131,7 +205,7 @@ Dark theme (#1E1E2E), tooltips on all controls, 10 new result view nodes, SQLite
 - **YARA rule loading** — external rule file support
 - **AbuseIPDB categories** — DDoS, botnet C2, brute-force, port scan, hacking, malware distribution
 
-### 📊 Export Formats (14 Total)
+### 📊 Export Formats (18 Total)
 
 | Format | Description |
 |--------|-------------|
@@ -238,11 +312,19 @@ BruteSharkDesktopStudioCli -l "Wi-Fi" -m Credentials,NetworkMap -o C:\Results
 6. Click tree nodes to inspect results:
    - **Credentials** → Passwords, Hashes
    - **Network** → Network Map, Sessions, DNS
-   - **Detection** → Alerts, Beacons
-   - **Fingerprints** → JA3, TLS Certs, SSH
-   - **Protocols** → HTTP, SMB, DHCP, ARP
+   - **Detection & Alerts** → Alerts, C2 Beacons, Rule Matches
+   - **Fingerprints & TLS** → JA3/JA3S, TLS Certificates, SSH
+   - **Protocol Analysis** → HTTP, SMB, DHCP, ARP
    - **Anomalies** → Statistical detections
+   - **Exfiltration** → DNS Exfiltration
    - **Data** → Files, VoIP Calls
+   - **BACnet Analysis** → 37 diagnostic checks, device browser, charts
+   - **Timeline** → Chronological event view
+   - **Flow Statistics** → Protocol distribution, top talkers
+   - **Statistics** → Protocol Stats dashboard
+   - **Tools** → Hex Viewer
+   - **Settings** → Theme toggle
+   - **Audit Log** → Activity trail
 7. Click **Export Results** for comprehensive HTML/PDF reports
 
 ---

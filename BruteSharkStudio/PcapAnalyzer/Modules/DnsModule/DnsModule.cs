@@ -1,4 +1,4 @@
-﻿using DNS.Protocol;
+using DNS.Protocol;
 using DNS.Protocol.ResourceRecords;
 using System;
 using System.Collections.Generic;
@@ -109,6 +109,6 @@ namespace PcapAnalyzer
 
         public void Analyze(TcpSession tcpSession) { }
 
-        public void Analyze(UdpStream udpStream) { }
+        public void Analyze(UdpStream udpStream) { if (udpStream?.Packets == null) return; foreach (var p in udpStream.Packets) Analyze(p); }
     }
 }
