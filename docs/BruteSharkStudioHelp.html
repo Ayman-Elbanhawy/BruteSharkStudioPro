@@ -3,1074 +3,563 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BruteShark Studio v2.0 — BruteShark Studio Pro v2.3.0</title>
+    <title>BruteShark Desktop Studio v2.3.0 Help Manual</title>
     <style>
         :root {
             color-scheme: dark;
-            --bg: #1e1e2e;
-            --panel: #252540;
-            --panel-alt: #2a2a48;
-            --text: #cdd6f4;
-            --muted: #a6adc8;
-            --line: #45475a;
+            --bg: #171927;
+            --panel: #22243a;
+            --panel-2: #2a2d46;
+            --panel-3: #303650;
+            --text: #eef3ff;
+            --muted: #aeb8d4;
+            --line: #4c5575;
             --accent: #89b4fa;
-            --accent-strong: #b4befe;
-            --nav-bg: #181825;
-            --nav-text: #cdd6f4;
-            --nav-muted: #6c7086;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-            --badge-critical: #f38ba8;
-            --badge-high: #fab387;
-            --badge-medium: #f9e2af;
-            --badge-low: #a6e3a1;
-            --badge-info: #89b4fa;
+            --accent-2: #7dd3fc;
+            --good: #9ece6a;
+            --warn: #e0af68;
+            --bad: #f7768e;
+            --shadow: 0 18px 40px rgba(0, 0, 0, .28);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-
         body {
-            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.7;
+            line-height: 1.65;
         }
+
+        a { color: var(--accent-2); text-decoration: none; }
+        a:hover { text-decoration: underline; }
 
         .layout {
             display: grid;
-            grid-template-columns: 300px minmax(0, 1fr);
+            grid-template-columns: 310px minmax(0, 1fr);
             min-height: 100vh;
         }
 
-        /* ── SIDEBAR ── */
         .sidebar {
-            position: sticky; top: 0; height: 100vh;
-            overflow-y: auto; padding: 32px 24px;
-            background: var(--nav-bg); color: var(--nav-text);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 22px;
+            background: #11131f;
             border-right: 1px solid var(--line);
         }
 
-        .sidebar h1 {
-            font-size: 26px;
-            background: linear-gradient(135deg, #89b4fa, #cba6f7);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
+        .brand {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: .2px;
+            margin: 0 0 4px;
         }
 
-        .sidebar .version {
-            color: var(--nav-muted); font-size: 13px; margin-bottom: 16px;
+        .version {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 18px;
         }
 
-        .sidebar p.sub { color: var(--nav-muted); font-size: 13px; margin-bottom: 24px; }
+        #search {
+            width: 100%;
+            margin: 0 0 18px;
+            padding: 10px 12px;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font: inherit;
+        }
 
-        .nav-group { margin-bottom: 18px; }
+        #search:focus { outline: 2px solid rgba(137,180,250,.35); border-color: var(--accent); }
 
+        .nav-group { margin: 18px 0; }
         .nav-group h2 {
-            font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--nav-muted); margin-bottom: 6px;
+            margin: 0 0 8px;
+            color: #7f8aad;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .12em;
         }
 
         .nav-group a {
-            display: block; padding: 7px 12px; margin: 2px 0;
-            border-radius: 6px; color: var(--nav-text);
-            text-decoration: none; font-size: 14px;
-            transition: background 0.15s;
+            display: block;
+            padding: 7px 10px;
+            margin: 2px 0;
+            border-radius: 7px;
+            color: var(--text);
+            font-size: 14px;
         }
 
-        .nav-group a:hover, .nav-group a:focus {
-            background: rgba(137, 180, 250, 0.1); outline: none;
+        .nav-group a:hover {
+            background: rgba(137,180,250,.12);
+            text-decoration: none;
         }
 
-        /* ── CONTENT ── */
-        .content { padding: 36px 40px; max-width: 960px; }
-
-        .hero, .section, .callout {
-            background: var(--panel); border: 1px solid var(--line);
-            border-radius: 12px; box-shadow: var(--shadow);
+        main {
+            width: min(1120px, 100%);
+            padding: 34px 42px 54px;
         }
 
         .hero {
-            padding: 36px 40px; margin-bottom: 28px;
-            background: linear-gradient(135deg, #252540 0%, #313155 100%);
-        }
-
-        .hero h2 { font-size: 36px; margin-bottom: 12px; }
-        .hero p { color: var(--muted); font-size: 16px; max-width: 700px; }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 14px; margin-top: 26px;
-        }
-
-        .summary-card {
-            padding: 18px; background: var(--panel-alt);
-            border: 1px solid var(--line); border-radius: 10px;
-        }
-
-        .summary-card h3 { font-size: 16px; margin-bottom: 8px; }
-        .summary-card p { color: var(--muted); font-size: 13px; }
-
-        .section { padding: 30px 34px; margin-bottom: 24px; }
-        .section h2 { font-size: 28px; margin-bottom: 14px; }
-        .section h3 { font-size: 20px; margin: 24px 0 10px; }
-        .section p, .section li { margin-bottom: 8px; }
-        .section ul, .section ol { padding-left: 22px; }
-
-        .callout {
-            padding: 18px 22px; margin: 18px 0;
-            background: var(--panel-alt);
-            border-left: 4px solid var(--accent);
-        }
-        .callout.critical { border-left-color: var(--badge-critical); }
-        .callout.tip { border-left-color: var(--badge-low); }
-        .callout strong { display: block; margin-bottom: 6px; font-size: 15px; }
-
-        /* ── SCREENSHOTS ── */
-        .image-frame {
-            margin: 22px 0; overflow: hidden;
-            border: 1px solid var(--line); border-radius: 10px;
-            background: var(--panel-alt);
-        }
-
-        .image-frame img {
-            display: block; width: 100%; height: auto;
-        }
-
-        .caption {
-            padding: 10px 16px; background: var(--panel-alt);
-            border-top: 1px solid var(--line);
-            color: var(--muted); font-size: 13px;
-        }
-
-        /* ── TABS ── */
-        .tab-shell { overflow: hidden; margin: 18px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
-        .tab-bar {
-            display: flex; flex-wrap: wrap; gap: 0;
-            border-bottom: 1px solid var(--line); background: var(--panel-alt);
-        }
-
-        .tab-button {
-            appearance: none; border: 0; border-right: 1px solid var(--line);
-            background: transparent; color: var(--muted);
-            padding: 12px 18px; font: inherit; font-size: 14px;
-            cursor: pointer; transition: background 0.15s;
-        }
-
-        .tab-button[aria-selected="true"] {
-            background: var(--panel); color: var(--accent-strong); font-weight: 600;
-        }
-
-        .tab-panel { display: none; padding: 24px; }
-        .tab-panel.active { display: block; }
-
-        /* ── CODE ── */
-        pre {
-            margin: 14px 0; padding: 16px 18px;
-            overflow-x: auto; background: #11111b;
-            color: #cdd6f4; border-radius: 8px; font-size: 13px;
+            padding: 34px;
             border: 1px solid var(--line);
+            border-radius: 12px;
+            background: linear-gradient(135deg, #252943, #20233a);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
         }
 
-        code {
-            font-family: "Cascadia Code", "Fira Code", Consolas, "Courier New", monospace;
+        .hero h1 { margin: 0 0 10px; font-size: 36px; line-height: 1.15; }
+        .hero p { margin: 0; max-width: 840px; color: var(--muted); font-size: 16px; }
+
+        .meta-grid, .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 20px 0 0;
+        }
+
+        .meta, .card, section {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            border-radius: 10px;
+        }
+
+        .meta, .card { padding: 16px; }
+        .meta strong, .card strong { display: block; margin-bottom: 5px; color: var(--accent); }
+        .meta span, .card span { color: var(--muted); font-size: 14px; }
+
+        section {
+            padding: 28px 30px;
+            margin: 22px 0;
+            box-shadow: 0 10px 26px rgba(0,0,0,.16);
+        }
+
+        section h2 { margin: 0 0 14px; font-size: 26px; }
+        section h3 { margin: 24px 0 8px; font-size: 19px; }
+        p { margin: 0 0 12px; }
+        ul, ol { margin-top: 8px; padding-left: 24px; }
+        li { margin: 6px 0; }
+
+        .image-frame {
+            overflow: hidden;
+            margin: 18px 0;
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+        }
+
+        .image-frame img { display: block; width: 100%; height: auto; }
+        .caption {
+            padding: 10px 14px;
+            color: var(--muted);
+            border-top: 1px solid var(--line);
             font-size: 13px;
         }
 
-        /* ── TABLES ── */
         table {
-            width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 14px;
         }
 
         th, td {
-            border: 1px solid var(--line); padding: 10px 14px;
-            text-align: left; vertical-align: top;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top;
         }
 
-        th { background: var(--panel-alt); font-weight: 600; color: var(--accent); }
+        th { color: var(--accent); background: var(--panel-3); }
 
-        /* ── BADGES ── */
-        .badge {
-            display: inline-block; padding: 2px 8px; border-radius: 4px;
-            font-size: 12px; font-weight: 600;
-        }
-        .badge-critical { background: var(--badge-critical); color: #11111b; }
-        .badge-high { background: var(--badge-high); color: #11111b; }
-        .badge-medium { background: var(--badge-medium); color: #11111b; }
-        .badge-low { background: var(--badge-low); color: #11111b; }
-        .badge-info { background: var(--badge-info); color: #11111b; }
-
-        .two-col {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
+        code, pre {
+            font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+            font-size: 13px;
         }
 
-        .module-card {
-            padding: 16px; margin: 10px 0;
-            background: var(--panel-alt); border: 1px solid var(--line);
+        code {
+            padding: 2px 5px;
+            background: #11131f;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 5px;
+        }
+
+        pre {
+            overflow-x: auto;
+            margin: 14px 0;
+            padding: 16px;
+            color: #d7e2ff;
+            background: #10121d;
+            border: 1px solid var(--line);
             border-radius: 8px;
         }
 
-        .module-card h4 { margin-bottom: 6px; font-size: 15px; }
-        .module-card p { font-size: 13px; color: var(--muted); }
+        .callout {
+            margin: 16px 0;
+            padding: 14px 16px;
+            border-left: 4px solid var(--accent);
+            background: var(--panel-2);
+            border-radius: 8px;
+        }
+        .callout.warning { border-left-color: var(--warn); }
+        .callout.success { border-left-color: var(--good); }
+        .callout.danger { border-left-color: var(--bad); }
 
-        .footer-note {
-            color: var(--muted); font-size: 13px; margin-top: 32px;
-            padding-top: 20px; border-top: 1px solid var(--line);
+        .pill {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px 4px 2px 0;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--text);
+            background: var(--panel-2);
+            font-size: 12px;
         }
 
-        @media (max-width: 1100px) {
+        .footer {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        @media (max-width: 980px) {
             .layout { grid-template-columns: 1fr; }
             .sidebar { position: static; height: auto; }
-            .summary-grid, .two-col { grid-template-columns: 1fr; }
-            .content { padding: 18px; }
+            main { padding: 20px; }
+            .hero h1 { font-size: 30px; }
         }
-
-        /* ── SEARCH ── */
-        #search-box {
-            width: 100%; padding: 10px 14px; border: 1px solid var(--line);
-            border-radius: 8px; background: var(--bg); color: var(--text);
-            font: inherit; font-size: 14px; margin-bottom: 16px;
-        }
-        #search-box:focus { outline: none; border-color: var(--accent); }
     </style>
 </head>
 <body>
-    <div class="layout">
-        <!-- ══════════════ SIDEBAR ══════════════ -->
-        <aside class="sidebar">
-            <h1>BruteShark Studio</h1>
-            <div class="version">Professional Edition v2.3.0</div>
-            <p class="sub">Network Forensic Analysis Toolkit — Windows Desktop + CLI</p>
-
-            <input type="text" id="search-box" placeholder="🔍 Search help topics…" oninput="searchHelp()">
-
-            <nav id="nav">
-                <div class="nav-group">
-                    <h2>Overview</h2>
-                    <a href="#overview">Product Overview</a>
-                    <a href="#whats-new">What's New in v2.0</a>
-                    <a href="#quick-start">Quick Start Guide</a>
-                    <a href="#architecture">Architecture</a>
-                </div>
-                <div class="nav-group">
-                    <h2>Desktop Application</h2>
-                    <a href="#desktop-main">Main Window</a>
-                    <a href="#desktop-files">Loading Files</a>
-                    <a href="#desktop-modules">Analysis Modules</a>
-                    <a href="#desktop-views">Result Views</a>
-                    <a href="#desktop-export">Exporting Results</a>
-                    <a href="#desktop-rest">REST API</a>
-                </div>
-                <div class="nav-group">
-                    <h2>Analysis Modules</h2>
-                    <a href="#mod-credentials">Credentials &amp; Hashes</a>
-                    <a href="#mod-network">Network Map &amp; Sessions</a>
-                    <a href="#mod-detection">Threat Detection</a>
-                    <a href="#mod-fingerprinting">Fingerprinting</a>
-                    <a href="#mod-protocols">Protocol Analysis</a>
-                    <a href="#mod-data">Data Extraction</a>
-                </div>
-                <div class="nav-group">
-                    <h2>Reports &amp; Export</h2>
-                    <a href="#report-html">HTML Reports</a>
-                    <a href="#report-pdf">PDF Reports</a>
-                    <a href="#report-zeek">Zeek-Format Logs</a>
-                    <a href="#report-stix">STIX / MISP IOCs</a>
-                </div>
-                <div class="nav-group">
-                    <h2>Hashcat</h2>
-                    <a href="#hashcat">Hashcat Integration</a>
-                    <a href="#hashcat-modes">Supported Hashcat Modes</a>
-                </div>
-                <div class="nav-group">
-                    <h2>CLI</h2>
-                    <a href="#cli">CLI Usage</a>
-                    <a href="#cli-examples">CLI Examples</a>
-                </div>
-                <div class="nav-group">
-                    <h2>Enterprise Features</h2>
-                    <a href="#ent-hex">Hex Viewer</a>
-                    <a href="#ent-save">Save / Load Projects</a>
-                    <a href="#ent-stats">Protocol Statistics</a>
-                    <a href="#ent-timeline">Timeline View</a>
-                    <a href="#ent-flowstats">Flow Statistics</a>
-                    <a href="#ent-bacnet">BACnet Analysis</a>
-                    <a href="#ent-audit">Audit Log</a>
-                    <a href="#ent-theme">Theme Toggle</a>
-                    <a href="#ent-shortcuts">Keyboard Shortcuts</a>
-                    <a href="#ent-search">Search / Filter</a>
-                    <a href="#ent-plugins">Plugin SDK</a>
-                </div>
-                <div class="nav-group">
-                    <h2>Install &amp; Build</h2>
-                    <a href="#installer">Installer</a>
-                    <a href="#build">Build from Source</a>
-                    <a href="#troubleshooting">Troubleshooting</a>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- ══════════════ CONTENT ══════════════ -->
-        <main class="content">
-
-            <!-- ── HERO ── -->
-            <section class="hero" id="overview">
-                <h2>🦁 BruteShark Studio v2.2</h2>
-                <p>
-                    A professional-grade network forensic analysis platform for Windows.
-                    Extract credentials, detect C2 beacons, fingerprint TLS &amp; SSH, identify anomalies,
-                    and export comprehensive investigation reports — all from an intuitive desktop interface
-                    or automated CLI pipeline.
-                </p>
-
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <h3>🔐 19 Credential Parsers</h3>
-                        <p>LDAP, NTLM, Kerberos, HTTP, FTP, SMTP, IMAP, POP3, VNC, RDP NLA, SNMP, IRC + more</p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>🛡️ Threat Detection</h3>
-                        <p>C2 beacon hunting, JA3/JA3S fingerprinting, YARA rules, payload patterns, DNS exfiltration</p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>🔍 16 Analysis Modules</h3>
-                        <p>Auto-discovered via reflection — enable only what you need for faster processing</p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>📊 Multi-Format Export</h3>
-                        <p>HTML, PDF, JSON, CSV, STIX 2.0, MISP, Zeek logs, Hashcat, IOC, timeline — 18 export formats</p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>💾 Session Persistence</h3>
-                        <p>Save/load projects (.bsproj), keyboard shortcuts (Ctrl+S/O/P), audit logging</p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>🔨 Hashcat Built-In</h3>
-                        <p>Bundled Hashcat v6.2.6 with 30+ rule files, system PATH integration</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ── WHAT'S NEW ── -->
-            <section class="section" id="whats-new">
-                <h2>🚀 What's New in v2.2</h2>
-                <div class="callout">
-                    <strong>v2.2 — April 2026</strong>
-                    Enterprise features, session persistence, audit logging, hex viewer, protocol stats, plugin SDK, and comprehensive bug fixes.
-                </div>
-                <div class="two-col">
-                    <div>
-                        <h3>New Enterprise Features (v2.2)</h3>
-                        <ul>
-                            <li><strong>Save / Load Projects</strong> — .bsproj JSON persistence with keyboard shortcuts</li>
-                            <li><strong>Packet Hex Viewer</strong> — Wireshark-style hex dump with offset/HEX/ASCII panels</li>
-                            <li><strong>Protocol Statistics Dashboard</strong> — bar charts, top talkers, summaries</li>
-                            <li><strong>Audit Logging</strong> — timestamped activity trail for chain-of-custody</li>
-                            <li><strong>Theme Toggle</strong> — one-click dark/light theme switching</li>
-                            <li><strong>Keyboard Shortcuts</strong> — Ctrl+S/O/P for save/load/PDF export</li>
-                            <li><strong>Plugin SDK</strong> — IPlugin interface for custom dissector modules</li>
-                            <li><strong>PDF Export</strong> — HTML report export with print-to-PDF guidance</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3>Bug Fixes (v2.2)</h3>
-                        <ul>
-                            <li><strong>SMB/ARP routing fixed</strong> — tabs now populate correctly (were hidden in Alerts)</li>
-                            <li><strong>Duplicate PayloadAlert resolved</strong> — anomaly tracking now works</li>
-                            <li><strong>DetectionRuleEngine UI wired</strong> — matches now visible in Rule Matches tab</li>
-                            <li><strong>DNS ExfiltrationModule wired</strong> — previously had zero UI surface</li>
-                            <li><strong>Export coverage expanded</strong> — SSH, DHCP, HTTP, TLS, PayloadAlerts, DNS Exfil now exported</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="callout tip">
-                    <strong>📋 v2.0 Features (already included)</strong>
-                    Previously added in v2.0: 16 analysis modules, 19 credential parsers, C2 beacon detection, JA3 fingerprinting, YARA rules, HTML/PDF reports, Zeek logs, STIX/MISP export, REST API, AbuseIPDB integration, SQLite case DB, professional dark theme, tooltips on all controls.
-                </div>
-            </section>
-
-            <!-- ── QUICK START ── -->
-            <section class="section" id="quick-start">
-                <h2>⚡ Quick Start Guide</h2>
-                <ol>
-                    <li><strong>Install</strong> — Run <code>BruteSharkDesktopStudioInstaller.msi</code> (requires admin for PATH setup).</li>
-                    <li><strong>Launch</strong> — Double-click the desktop shortcut or find "BruteShark Desktop Studio" in Start Menu.</li>
-                    <li><strong>Load files</strong> — Click <em>Add Files</em> and select <code>.pcap</code> or <code>.pcapng</code> captures.</li>
-                    <li><strong>Select modules</strong> — Check the modules you need in the sidebar. Default: all enabled.</li>
-                    <li><strong>Configure sessions</strong> — Keep TCP &amp; UDP reconstruction ON for full analysis depth.</li>
-                    <li><strong>Run</strong> — Click the <em>Run</em> button. Progress bar shows analysis status.</li>
-                    <li><strong>Review</strong> — Click tree nodes to inspect passwords, hashes, network maps, alerts, and more.</li>
-                    <li><strong>Export</strong> — Click <em>Export Results</em> to generate HTML/PDF reports, CSVs, and Hashcat files.</li>
-                </ol>
-
-                <div class="callout tip">
-                    <strong>💡 Pro Tip</strong>
-                    For large captures (1GB+), disable modules you don't need. Session reconstruction is the most resource-intensive step. Use the BPF filter for live captures to reduce noise.
-                </div>
-            </section>
-
-            <!-- ── ARCHITECTURE ── -->
-            <section class="section" id="architecture">
-                <h2>🏗️ Architecture</h2>
-                <pre><code>┌──────────────────────────────────────────────────────────┐
-│                    BruteShark Studio v2.0                  │
-├────────────┬────────────┬────────────┬────────────────────┤
-│  Desktop   │    CLI     │  REST API  │  Wireshark Plugin  │
-│ (WinForms) │ (Console)  │ (HTTP:8089)│                    │
-├────────────┴────────────┴────────────┴────────────────────┤
-│                     CommonUi Layer                         │
-│  Exporting · CaseManager · IocExporter · TimelineGenerator│
-│  PdfReportGenerator · ZeekLogExporter · FullHtmlReport    │
-├───────────────────────────────────────────────────────────┤
-│                    PcapProcessor Layer                     │
-│  Packet Capture · TCP/UDP Reassembly · Session Tracking   │
-├───────────────────────────────────────────────────────────┤
-│                    PcapAnalyzer Layer                      │
-│  14 IModules auto-discovered · 19 Credential Parsers      │
-│  JA3 · Beacon · Flow · DNS Exfil · ARP · SSH · SMB · DHCP │
-│  TLS Certs · Anomaly Detection · YARA · Detection Rules   │
-├───────────────────────────────────────────────────────────┤
-│                    BruteForce Layer                        │
-│  Hashcat Runner · Hashcat Format Conversion                │
-└───────────────────────────────────────────────────────────┘</code></pre>
-            </section>
-
-            <!-- ── MAIN WINDOW ── -->
-            <section class="section" id="desktop-main">
-                <h2>🖥️ Main Window</h2>
-
-                <div class="image-frame">
-                    <img src="../readme_media/BruteSharkDesktopStudio_Main_v2.png" alt="BruteShark Desktop Studio Main Window">
-                    <div class="caption">Main desktop interface showing the module tree, file list, session controls, and processing bar.</div>
-                </div>
-
-                <h3>Interface Components</h3>
-                <table>
-                    <tr><th>Component</th><th>Description</th></tr>
-                    <tr><td><strong>Module Tree (left)</strong></td><td>Navigation tree with collapsible nodes for each result category</td></tr>
-                    <tr><td><strong>File List (top-right)</strong></td><td>Loaded capture files with processing status indicators</td></tr>
-                    <tr><td><strong>Control Bar</strong></td><td>Add/Remove files, Run analysis, Export results, Clear workspace</td></tr>
-                    <tr><td><strong>Session Toggles</strong></td><td>Enable/disable TCP and UDP session reconstruction</td></tr>
-                    <tr><td><strong>Live Capture</strong></td><td>Interface selector, BPF filter, Promiscuous mode, Start/Stop</td></tr>
-                    <tr><td><strong>Module Checklist</strong></td><td>Toggle individual analysis modules on/off</td></tr>
-                    <tr><td><strong>Results Panel (right)</strong></td><td>Context-sensitive viewer for the selected tree node</td></tr>
-                    <tr><td><strong>Progress Bar</strong></td><td>Shows analysis progress and current status</td></tr>
-                </table>
-            </section>
-
-            <!-- ── LOADING FILES ── -->
-            <section class="section" id="desktop-files">
-                <h2>📁 Loading Capture Files</h2>
-                <ol>
-                    <li>Click <strong>Add Files</strong> to open the file picker.</li>
-                    <li>Select one or more <code>.pcap</code> or <code>.pcapng</code> files.</li>
-                    <li>Files appear in the list with <em>Wait</em> status.</li>
-                    <li>Click <strong>Remove Files</strong> to remove selected files from the pending list.</li>
-                    <li>Files are processed in order when you click <strong>Run</strong>.</li>
-                </ol>
-
-                <div class="callout">
-                    <strong>💡 PCAPNG Compatibility</strong>
-                    Some PCAPNG files may fail analysis. Convert them with TShark first:
-                    <pre><code>tshark -F pcap -r input.pcapng -w output.pcap</code></pre>
-                </div>
-            </section>
-
-            <!-- ── MODULES ── -->
-            <section class="section" id="desktop-modules">
-                <h2>🧩 Analysis Modules</h2>
-                <p>Modules are auto-discovered at startup via .NET reflection. Enable or disable modules from the checklist in the sidebar. Disabled modules skip processing entirely — useful for large captures.</p>
-
-                <h3>Module Categories</h3>
-
-                <div class="module-card">
-                    <h4>🔐 Credentials &amp; Hashes</h4>
-                    <p>Extracts passwords, NTLM hashes, Kerberos tickets, LDAP binds, HTTP auth, SMTP/IMAP/POP3 credentials, VNC challenges, RDP NLA hashes, SNMP communities, IRC passwords, and more. Output appears in <strong>Passwords</strong> and <strong>Hashes</strong> views.</p>
-                </div>
-
-                <div class="module-card">
-                    <h4>🌐 Network Map &amp; Sessions</h4>
-                    <p>Builds endpoint relationship graphs from observed connections. Enriches nodes with port data, DNS names, and credential context. Reconstructed TCP/UDP sessions available in the <strong>Sessions</strong> viewer with hex dumps.</p>
-                </div>
-
-                <div class="module-card">
-                    <h4>🛡️ Threat Detection</h4>
-                    <p><strong>C2 Beacon Detection</strong> — statistical analysis of connection timing to identify periodic beaconing.<br>
-                    <strong>DNS Exfiltration</strong> — detects data tunneling through DNS queries (entropy, length anomalies).<br>
-                    <strong>Payload Patterns</strong> — regex-based scanning for shells, malware signatures, suspicious strings.<br>
-                    <strong>Detection Rules</strong> — 12 built-in rules + YARA rule loading for custom detection.<br>
-                    <strong>ARP Spoofing</strong> — detects ARP cache poisoning / MITM attacks.<br>
-                    <strong>Anomaly Detection</strong> — statistical baselining for bandwidth spikes and unusual traffic.</p>
-                </div>
-
-                <div class="module-card">
-                    <h4>🔍 Fingerprinting</h4>
-                    <p><strong>JA3/JA3S</strong> — TLS client/server fingerprinting with 13 known-malicious signature database.<br>
-                    <strong>SSH Fingerprint</strong> — host key extraction and key-change detection for MITM identification.<br>
-                    <strong>TLS Certificate</strong> — X.509 certificate parsing with suspicious cert detection (self-signed, expired).</p>
-                </div>
-
-                <div class="module-card">
-                    <h4>📡 Protocol Analysis</h4>
-                    <p><strong>HTTP Metadata</strong> — request/response headers, User-Agent tracking, URL extraction.<br>
-                    <strong>SMB Dissector</strong> — NTLM over SMB, named pipe detection, share enumeration.<br>
-                    <strong>DHCP Snooping</strong> — rogue DHCP server detection, lease tracking, starvation detection.<br>
-                    <strong>Flow Aggregation</strong> — NetFlow-style 5-tuple flow records with byte/packet counts.</p>
-                </div>
-
-                <div class="module-card">
-                    <h4>📦 Data Extraction</h4>
-                    <p><strong>File Carving</strong> — extracts 50+ file types from TCP streams (images, archives, docs, executables).<br>
-                    <strong>DNS Responses</strong> — collects DNS name-to-IP mappings for endpoint enrichment.<br>
-                    <strong>VoIP Calls</strong> — SIP/RTP call reconstruction with audio export capability.</p>
-                </div>
-            </section>
-
-            <!-- ── RESULT VIEWS ── -->
-            <section class="section" id="desktop-views">
-                <h2>📋 Result Views</h2>
-
-                <div class="tab-shell" data-tabs>
-                    <div class="tab-bar" role="tablist">
-                        <button class="tab-button" role="tab" aria-selected="true" data-tab="v-passwords">Passwords</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-hashes">Hashes</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-network">Network Map</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-sessions">Sessions</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-alerts">Alerts &amp; Beacons</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-fingerprints">Fingerprints</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-data">Files, DNS, VoIP</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-protocols">Protocols</button>
-                        <button class="tab-button" role="tab" aria-selected="false" data-tab="v-anomalies">Anomalies</button>
-                    </div>
-
-                    <div class="tab-panel active" id="v-passwords">
-                        <h3>Passwords View</h3>
-                        <p>Tabular display of extracted credentials showing <strong>Protocol</strong>, <strong>Username</strong>, <strong>Password</strong>, <strong>Source IP</strong>, and <strong>Destination IP</strong>. Columns are sortable. Right-click to copy values.</p>
-                        <div class="image-frame"><img src="../readme_media/Passwords.PNG" alt="Passwords view"><div class="caption">Extracted passwords displayed in sortable table format.</div></div>
-                    </div>
-
-                    <div class="tab-panel" id="v-hashes">
-                        <h3>Hashes View</h3>
-                        <p>Displays extracted authentication hashes with <strong>Hash Type</strong>, <strong>Username</strong>, truncated <strong>Hash</strong> value, and <strong>Source/Destination</strong>. Features include:</p>
-                        <ul>
-                            <li>Filter by hash type (NTLM, Kerberos, etc.)</li>
-                            <li>Export in Hashcat format (grouped by hash type)</li>
-                            <li>Copy individual hash to clipboard</li>
-                            <li>One-click <strong>Crack with Hashcat</strong> workflow</li>
-                        </ul>
-                        <div class="image-frame"><img src="../readme_media/Hashes.PNG" alt="Hashes view"><div class="caption">Hash extraction results with built-in Hashcat integration.</div></div>
-                    </div>
-
-                    <div class="tab-panel" id="v-network">
-                        <h3>Network Map View</h3>
-                        <p>Visual graph showing endpoint relationships. Nodes represent IP addresses, enriched with DNS names, open ports, and credential context. Edges represent observed connections. Features zoom, pan, and node selection.</p>
-                        <div class="image-frame"><img src="../readme_media/NetworkMap.png" alt="Network map"><div class="caption">Interactive network topology graph with endpoint enrichment.</div></div>
-                    </div>
-
-                    <div class="tab-panel" id="v-sessions">
-                        <h3>Sessions View</h3>
-                        <p>Reconstructed TCP and UDP sessions with protocol-aware hex dump viewer. Features text/hex search and protocol annotation highlighting. Expand any session to see full payload data.</p>
-                    </div>
-
-                    <div class="tab-panel" id="v-alerts">
-                        <h3>Alerts &amp; Beacon Detection</h3>
-                        <p>Detection rule matches with severity badges:</p>
-                        <ul>
-                            <li><span class="badge badge-critical">Critical</span> — confirmed exploitation or C2 activity</li>
-                            <li><span class="badge badge-high">High</span> — strong indicators of compromise</li>
-                            <li><span class="badge badge-medium">Medium</span> — suspicious but not confirmed</li>
-                        </ul>
-                        <p>Beacon results show <strong>Beacon Score</strong> (0-100%), <strong>Interval</strong>, <strong>Jitter Ratio</strong>, and <strong>Probable C2 Server</strong>.</p>
-                    </div>
-
-                    <div class="tab-panel" id="v-fingerprints">
-                        <h3>Fingerprint Views</h3>
-                        <p><strong>JA3/JA3S</strong> — TLS fingerprints with matching against known-malicious signature database. Shows JA3 hash, JA3S hash, and associated IPs.</p>
-                        <p><strong>SSH Fingerprints</strong> — host key hashes with change detection alerts for potential MITM.</p>
-                        <p><strong>TLS Certificates</strong> — X.509 cert details with suspicious flagging (self-signed, expired, long validity).</p>
-                    </div>
-
-                    <div class="tab-panel" id="v-data">
-                        <h3>Files, DNS, VoIP</h3>
-                        <p><strong>Files</strong> — carved files from TCP streams with type detection for 50+ formats.<br>
-                        <strong>DNS</strong> — name-to-IP mappings with query/response pair tracking.<br>
-                        <strong>VoIP</strong> — SIP call records with RTP stream export capability.</p>
-                        <div class="image-frame"><img src="../readme_media/FilesCarving.png" alt="File carving"><div class="caption">File extraction results showing carved files from network traffic.</div></div>
-                    </div>
-
-                    <div class="tab-panel" id="v-protocols">
-                        <h3>Protocol Analysis</h3>
-                        <p><strong>HTTP Metadata</strong> — request URLs, User-Agent strings, response codes.<br>
-                        <strong>SMB Sessions</strong> — NTLM auth over SMB, named pipe connections.<br>
-                        <strong>DHCP Activity</strong> — lease assignments, rogue server alerts.</p>
-                    </div>
-
-                    <div class="tab-panel" id="v-anomalies">
-                        <h3>Anomaly Detection</h3>
-                        <p>Statistical anomalies detected during analysis:<br>
-                        <strong>Bandwidth Spikes</strong> — traffic volume 3× above baseline.<br>
-                        <strong>Packet Rate Anomalies</strong> — potential DoS indicators.<br>
-                        <strong>Unusual Ports</strong> — connections to rare or suspicious ports.<br>
-                        <strong>Host Volume</strong> — hosts generating disproportionate traffic.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ── EXPORTING ── -->
-            <section class="section" id="desktop-export">
-                <h2>📤 Exporting Results</h2>
-                <p>Click <strong>Export Results</strong> and choose an output directory. The export creates a structured folder:</p>
-                <pre><code>BruteShark_Export_YYYYMMDD/
-├── BruteShark_Full_Report.html       ← Comprehensive HTML forensic report
-├── BruteShark_Forensic_Report.pdf    ← Self-contained PDF report
-├── BruteShark_Forensic_Timeline.txt  ← Chronological event timeline
-├── BruteShark_Summary.json           ← Machine-readable JSON
-├── BruteShark_IOCs.json              ← STIX 2.0 IOC export
-├── BruteShark_IOCs.misp.json         ← MISP-compatible export
-├── Zeek_Logs/
-│   ├── conn.log                      ← Connection log (Zeek format)
-│   ├── dns.log                       ← DNS query/response log
-│   ├── ssl.log                       ← TLS/SSL handshake log
-│   └── http.log                      ← HTTP transaction log
-├── Hashes/
-│   ├── BruteShark_NTLMv2_Hashcat.txt
-│   ├── BruteShark_Kerberos_AS-REP_Hashcat.txt
-│   └── ...
-├── NetworkMap/
-│   └── NetworkMap.json
-├── Files/
-├── VoIP/
-└── DNS/</code></pre>
-            </section>
-
-            <!-- ── REST API ── -->
-            <section class="section" id="desktop-rest">
-                <h2>🌐 REST API</h2>
-                <p>The desktop app exposes a REST API on <code>http://localhost:8089</code> for programmatic access:</p>
-                <table>
-                    <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
-                    <tr><td><code>/api/status</code></td><td>GET</td><td>Analysis status, module list, counts</td></tr>
-                    <tr><td><code>/api/results</code></td><td>GET</td><td>All parsed results (JSON)</td></tr>
-                    <tr><td><code>/api/credentials</code></td><td>GET</td><td>Extracted passwords and hashes</td></tr>
-                    <tr><td><code>/api/network</code></td><td>GET</td><td>Network connections and DNS mappings</td></tr>
-                    <tr><td><code>/api/iocs</code></td><td>GET</td><td>Indicators of compromise</td></tr>
-                    <tr><td><code>/api/report</code></td><td>GET</td><td>Generate and download HTML report</td></tr>
-                    <tr><td><code>/api/zeek</code></td><td>GET</td><td>Zeek-format logs</td></tr>
-                </table>
-                <pre><code>curl http://localhost:8089/api/status</code></pre>
-            </section>
-
-            <!-- ── HTML REPORTS ── -->
-            <section class="section" id="report-html">
-                <h2>📊 HTML Forensic Reports</h2>
-                <p>The comprehensive HTML report includes:</p>
-                <ul>
-                    <li><strong>Executive Summary</strong> — statistics, alert counts, top findings</li>
-                    <li><strong>Critical &amp; High Severity Findings</strong> — priority-ranked alert table</li>
-                    <li><strong>C2 Beacon Results</strong> — scored beacon detections with timing data</li>
-                    <li><strong>JA3 Fingerprints</strong> — TLS fingerprint matches against malicious database</li>
-                    <li><strong>Extracted Credentials</strong> — passwords and hashes with Hashcat format</li>
-                    <li><strong>TLS Certificates</strong> — suspicious certificate detection (self-signed, expired)</li>
-                    <li><strong>Network Connections</strong> — endpoint relationship summary</li>
-                    <li><strong>DNS Mappings</strong> — name resolution table</li>
-                    <li><strong>File Extraction Summary</strong> — carved files listing</li>
-                    <li><strong>Anomaly Alerts</strong> — statistical detection results</li>
-                    <li><strong>Timeline</strong> — chronological event log</li>
-                </ul>
-                <p>Reports are <strong>dark-themed</strong>, <strong>collapsible</strong>, <strong>searchable</strong>, and <strong>print-friendly</strong>. All tables are sortable. Hashes have copy-to-clipboard buttons.</p>
-            </section>
-
-            <!-- ── PDF REPORTS ── -->
-            <section class="section" id="report-pdf">
-                <h2>📄 PDF Reports</h2>
-                <p>Self-contained PDF reports generated with no external dependencies. Includes executive summary, critical findings, beacon results, and hash extraction summary. Suitable for distribution and archival.</p>
-            </section>
-
-            <!-- ── ZEEK LOGS ── -->
-            <section class="section" id="report-zeek">
-                <h2>📝 Zeek-Format Logs</h2>
-                <p>BruteShark exports four Zeek-compatible log formats for integration with SIEM and log analysis pipelines:</p>
-                <ul>
-                    <li><strong>conn.log</strong> — TCP/UDP connection records with byte/packet counts and duration</li>
-                    <li><strong>dns.log</strong> — DNS query/response pairs with query type and TTL</li>
-                    <li><strong>ssl.log</strong> — TLS handshake metadata, JA3 hashes, certificate details</li>
-                    <li><strong>http.log</strong> — HTTP method, host, URI, status code, User-Agent</li>
-                </ul>
-            </section>
-
-            <!-- ── STIX / MISP ── -->
-            <section class="section" id="report-stix">
-                <h2>🔗 STIX 2.0 &amp; MISP IOC Export</h2>
-                <p>Export indicators of compromise in industry-standard formats:</p>
-                <ul>
-                    <li><strong>STIX 2.0</strong> — structured threat information for TIP integration</li>
-                    <li><strong>MISP</strong> — compatible JSON for MISP threat sharing platform</li>
-                </ul>
-                <p>Includes IPv4/domain indicators, JA3 fingerprint IOCs, and detection rule matches.</p>
-            </section>
-
-            <!-- ── HASHCAT ── -->
-            <section class="section" id="hashcat">
-                <h2>🔨 Hashcat Integration</h2>
-                <p>BruteShark Studio bundles Hashcat v6.2.6 with 30+ rule files. The installer adds the Hashcat folder to system PATH automatically.</p>
-
-                <h3>Desktop Workflow</h3>
-                <ol>
-                    <li>Open the <strong>Hashes</strong> view after analysis.</li>
-                    <li>Select a hash type from the dropdown.</li>
-                    <li>Choose an output directory.</li>
-                    <li>Select a wordlist (rockyou.txt recommended).</li>
-                    <li>Optionally add extra Hashcat arguments (e.g., <code>-r rules/best64.rule</code>).</li>
-                    <li>Click <strong>Crack with Hashcat</strong>.</li>
-                    <li>Review results in the result dialog.</li>
-                </ol>
-
-                <h3>CLI Workflow</h3>
-                <pre><code>BruteSharkDesktopStudioCli -m Credentials -d C:\Captures -o C:\Results --hashcat-wordlist C:\Wordlists\rockyou.txt</code></pre>
-            </section>
-
-            <!-- ── HASHCAT MODES ── -->
-            <section class="section" id="hashcat-modes">
-                <h2>📋 Supported Hashcat Modes</h2>
-                <table>
-                    <thead><tr><th>Hash Type</th><th>Mode</th><th>Example Source</th></tr></thead>
-                    <tbody>
-                        <tr><td>NTLMv1</td><td>5500</td><td>SMB, HTTP NTLM, LDAP</td></tr>
-                        <tr><td>NTLMv2</td><td>5600</td><td>SMBv2, RDP NLA, LDAP</td></tr>
-                        <tr><td>Kerberos AS-REQ (etype 23)</td><td>7500</td><td>Active Directory auth</td></tr>
-                        <tr><td>Kerberos AS-REP (etype 23)</td><td>18200</td><td>AS-REP roasting</td></tr>
-                        <tr><td>Kerberos TGS-REP (etype 23)</td><td>13100</td><td>Kerberoasting</td></tr>
-                        <tr><td>Kerberos TGS-REP (etype 17)</td><td>19600</td><td>AES128 Kerberoasting</td></tr>
-                        <tr><td>Kerberos TGS-REP (etype 18)</td><td>19700</td><td>AES256 Kerberoasting</td></tr>
-                        <tr><td>HTTP Digest MD5</td><td>11400</td><td>HTTP Digest auth</td></tr>
-                        <tr><td>CRAM-MD5</td><td>16400</td><td>SMTP/IMAP/POP3 CRAM-MD5</td></tr>
-                        <tr><td>POP3 APOP</td><td>9900</td><td>POP3 APOP auth</td></tr>
-                        <tr><td>VNC</td><td>VNC custom</td><td>VNC challenge-response</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- ── CLI ── -->
-            <section class="section" id="cli">
-                <h2>⌨️ CLI Usage</h2>
-                <pre><code>BruteSharkDesktopStudioCli --help</code></pre>
-
-                <h3>Command-Line Options</h3>
-                <table>
-                    <tr><th>Flag</th><th>Description</th></tr>
-                    <tr><td><code>-m, --modules</code></td><td>Comma-separated module list (or "All")</td></tr>
-                    <tr><td><code>-d, --directory</code></td><td>Directory containing PCAP files</td></tr>
-                    <tr><td><code>-f, --file</code></td><td>Single PCAP file to analyze</td></tr>
-                    <tr><td><code>-l, --live</code></td><td>Live capture interface name</td></tr>
-                    <tr><td><code>-o, --output</code></td><td>Output directory for results</td></tr>
-                    <tr><td><code>--hashcat-path</code></td><td>Path to hashcat.exe</td></tr>
-                    <tr><td><code>--hashcat-wordlist</code></td><td>Wordlist for cracking</td></tr>
-                </table>
-            </section>
-
-            <!-- ── CLI EXAMPLES ── -->
-            <section class="section" id="cli-examples">
-                <h2>📋 CLI Examples</h2>
-                <pre><code># Full analysis of a capture directory
-BruteSharkDesktopStudioCli -m All -d C:\Captures -o C:\Results
-
-# Credentials only, with Hashcat cracking
-BruteSharkDesktopStudioCli -m Credentials -d C:\Captures -o C:\Results --hashcat-wordlist rockyou.txt
-
-# Live capture on Wi-Fi interface
-BruteSharkDesktopStudioCli -l "Wi-Fi" -m Credentials,NetworkMap -o C:\Results
-
-# Process a single file
-BruteSharkDesktopStudioCli -f C:\Captures\suspicious.pcap -o C:\Results</code></pre>
-            </section>
-
-            <!-- ── INSTALLER ── -->
-            <section class="section" id="installer">
-                <h2>💿 Installer</h2>
-                <p>The MSI installer (<code>BruteSharkDesktopStudioInstaller.msi</code>) performs:</p>
-                <ul>
-                    <li>Install to <code>C:\Program Files (x86)\BruteShark Desktop Studio\</code></li>
-                    <li>Desktop shortcut (Public Desktop — all users)</li>
-                    <li>Start Menu shortcut (All Users → BruteShark Desktop Studio)</li>
-                    <li>Hashcat staged in <code>Hashcat\</code> subdirectory</li>
-                    <li>System PATH updated with Hashcat folder (elevated install)</li>
-                    <li><code>rules\</code> folder created for custom detection rules</li>
-                    <li>Uninstall via Windows Settings → Apps</li>
-                </ul>
-
-                <div class="callout critical">
-                    <strong>⚠ Administrator Rights Required</strong>
-                    The installer is per-machine. Run elevated for proper PATH integration. The MSI triggers UAC automatically when double-clicked.
-                </div>
-            </section>
-
-            <!-- ── BUILD ── -->
-            <section class="section" id="build">
-                <h2>🔧 Building from Source</h2>
-                <pre><code># Build the solution
-dotnet build .\BruteSharkStudio\PcapProcessor.sln -v:minimal
-
-# Run tests
-dotnet test .\BruteSharkStudio\PcapProcessor.sln -v:minimal
-
-# Build the MSI installer (requires WiX Toolset v3.11+)
-dotnet msbuild .\BruteSharkStudio\BruteSharkDesktopInstaller\BruteSharkDesktopInstaller.wixproj /t:Build /p:Configuration=Debug
-
-# Run the desktop app
-dotnet run --project .\BruteSharkStudio\BruteSharkDesktop\BruteSharkDesktop.csproj
-
-# Run the CLI
-dotnet run --project .\BruteSharkStudio\BruteSharkCli\BruteSharkCli.csproj -- --help</code></pre>
-            </section>
-
-            <!-- ── ENTERPRISE FEATURES ── -->
-            <section class="section" id="ent-hex">
-                <h2>🔢 Packet Hex Viewer</h2>
-                <p>The <strong>Hex Viewer</strong> (under Tools in the module tree) provides a Wireshark-style hex dump display:</p>
-                <ul>
-                    <li><strong>Paste hex bytes</strong> — type or paste raw hex (e.g., <code>48 65 6C 6C 6F</code>) and click <strong>Parse</strong></li>
-                    <li><strong>Offset column</strong> — 8-digit hex offset for each line</li>
-                    <li><strong>HEX panel</strong> — formatted byte display with 16 bytes per row</li>
-                    <li><strong>ASCII panel</strong> — printable character representation (dot for non-printable)</li>
-                    <li><strong>Synced scrolling</strong> — HEX and ASCII panels scroll together</li>
-                </ul>
-                <p>Useful for manually inspecting packet payloads or unknown protocol data.</p>
-            </section>
-
-            <section class="section" id="ent-save">
-                <h2>💾 Save / Load Projects</h2>
-                <p>Persist your entire investigation as a portable <code>.bsproj</code> (BruteShark Project) file:</p>
-                <ul>
-                    <li><strong>Save Project</strong> — <kbd>Ctrl</kbd> + <kbd>S</kbd> — serializes all analysis results to JSON</li>
-                    <li><strong>Load Project</strong> — <kbd>Ctrl</kbd> + <kbd>O</kbd> — restores a previous session with all data</li>
-                    <li>Saves: passwords, hashes, connections, files, DNS mappings, VoIP calls, JA3 fingerprints, beacons, alerts, DHCP, SSH, HTTP, TLS certs, DNS exfil alerts, and detection matches</li>
-                    <li>All result views are repopulated automatically on load</li>
-                    <li>Ideal for long-running investigations, evidence archival, and team collaboration</li>
-                </ul>
-                <div class="callout tip">
-                    <strong>💡 Pro Tip</strong>
-                    Save your project before clearing results or closing the app. Project files are human-readable JSON and can be inspected with any text editor.
-                </div>
-            </section>
-
-            <section class="section" id="ent-stats">
-                <h2>📊 Protocol Statistics Dashboard</h2>
-                <p>The <strong>Protocol Stats</strong> view (under Statistics in the module tree) provides at-a-glance traffic analysis:</p>
-                <ul>
-                    <li><strong>Protocol Distribution Bar Chart</strong> — visual breakdown of protocols observed (TCP, HTTP, TLS, DHCP, SSH, etc.)</li>
-                    <li><strong>Top Talkers Table</strong> — 20 most active source/destination IP pairs</li>
-                    <li><strong>Connection Summary</strong> — total connections, unique hosts, password count</li>
-                    <li><strong>Percentage breakdown</strong> — each protocol shown with count and percentage</li>
-                </ul>
-                <p>Automatically updates when you click the node. Great for SOC analysts who need quick traffic profiling.</p>
-            </section>
-
-            <section class="section" id="ent-audit">
-                <h2>📝 Audit Log</h2>
-                <p>The <strong>Audit Log</strong> (bottom of the module tree) maintains a timestamped activity trail for forensic accountability:</p>
-                <ul>
-                    <li>Records: app start, file additions, analysis start/end, exports, result clears, theme changes, project saves/loads, errors</li>
-                    <li><strong>Latest-first ordering</strong> — newest entries at the top</li>
-                    <li><strong>Double-click to copy</strong> — copy any log entry to clipboard</li>
-                    <li><strong>Clear button</strong> — resets the audit trail</li>
-                    <li>Entries capped at 5,000 to prevent memory bloat</li>
-                </ul>
-                <p>Essential for chain-of-custody documentation in forensic investigations.</p>
-            </section>
-
-            <section class="section" id="ent-theme">
-                <h2>🎨 Theme Toggle</h2>
-                <p>Switch between the professional <strong>Dark Theme</strong> and the <strong>Windows Light Theme</strong>:</p>
-                <ul>
-                    <li>Click <strong>Toggle Dark/Light Theme</strong> under Settings in the module tree</li>
-                    <li>Dark theme: #1E1E2E background, Catppuccin-inspired palette (default)</li>
-                    <li>Light theme: Standard Windows system colors</li>
-                    <li>All controls (buttons, text boxes, combo boxes, checkboxes, list views) update instantly</li>
-                    <li>Theme change is logged in the Audit Log</li>
-                </ul>
-            </section>
-
-            <section class="section" id="ent-shortcuts">
-                <h2>⌨️ Keyboard Shortcuts</h2>
-                <table>
-                    <tr><th>Shortcut</th><th>Action</th></tr>
-                    <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Save current project as .bsproj file</td></tr>
-                    <tr><td><kbd>Ctrl</kbd> + <kbd>O</kbd></td><td>Load a previously saved project</td></tr>
-                    <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Export PDF-ready HTML report</td></tr>
-                </table>
-                <p>These shortcuts work anywhere in the main window. The form has KeyPreview enabled for global keyboard capture.</p>
-            </section>
-
-            <section class="section" id="ent-search">
-                <h2>🔍 Search / Filter Results</h2>
-                <p>Quickly find data in any result view:</p>
-                <ul>
-                    <li><strong>HTML Help Search</strong> — the sidebar search box filters help topics in real-time (type 2+ characters)</li>
-                    <li><strong>DataGridView Filtering</strong> — all result tables support column sorting by clicking headers</li>
-                    <li><strong>Module-specific views</strong> — each node opens a filtered, context-appropriate view</li>
-                    <li><strong>Session hex viewer</strong> — search within reconstructed session payloads</li>
-                </ul>
-            </section>
-
-            <section class="section" id="ent-plugins">
-                <h2>🔌 Plugin SDK</h2>
-                <p>BruteShark Studio supports custom dissector plugins via the <code>IPlugin</code> interface:</p>
-                <pre><code>public interface IPlugin
-{
-    string Name { get; }           // Human-readable name
-    string Version { get; }        // Plugin version
-    string Description { get; }    // What it does
-    bool Initialize();             // Called on plugin load
-    void Shutdown();               // Called on plugin unload
-}</code></pre>
-                <p>Plugin SDK documentation and full API coming in v2.3. Register your interest on GitHub Issues.</p>
-            </section>
-
-            <!-- Enterprise: Timeline -->
-            <section class="section" id="ent-timeline">
-                <h2>📅 Timeline View</h2>
-                <p>Access via <strong>Timeline</strong> in the module tree:</p>
-                <ul>
-                    <li>14 event types displayed chronologically</li>
-                    <li>Color-coded rows by type: Password (red), Hash (orange), File (green), Beacon (pink), DNS (blue), etc.</li>
-                    <li>Columns: Time, Type, Source, Destination, Summary</li>
-                    <li>Export Timeline CSV button at top</li>
-                    <li>Sortable by clicking column headers</li>
-                </ul>
-            </section>
-
-            <!-- Enterprise: Flow Statistics -->
-            <section class="section" id="ent-flowstats">
-                <h2>📊 Flow Statistics</h2>
-                <p>Access via <strong>Flow Statistics</strong> in the module tree:</p>
-                <ul>
-                    <li><strong>Protocol Distribution</strong> — protocol name, packet count, byte count, percentage</li>
-                    <li><strong>Top Talkers</strong> — source IP, destination IP, packet count, byte count</li>
-                    <li><strong>Flow Summary</strong> — total flows, unique sources, unique destinations, data size</li>
-                    <li>Catppuccin color palette for protocol rows</li>
-                    <li>Export CSV button for full report</li>
-                </ul>
-            </section>
-
-            <!-- Enterprise: BACnet Analysis -->
-            <section class="section" id="ent-bacnet">
-                <h2>🏗️ BACnet Network Analysis</h2>
-                <p>Access via <strong>BACnet Analysis</strong> in the module tree. Click after running PCAP analysis.</p>
-                <h3>Health Dashboard</h3>
-                <ul>
-                    <li><strong>BACnet Health Score</strong> — percentage with green (≥80%), yellow (≥60%), red (&lt;60%)</li>
-                    <li><strong>Sub-scores</strong> — Connectivity, Performance, Integrity</li>
-                    <li><strong>Statistics</strong> — devices, subnets, BACnet networks, peak traffic rate, trend objects, forwarded NPDU</li>
-                </ul>
-                <h3>37 Diagnostic Checks</h3>
-                <p>Based on ASHRAE 135.1 / OptigoVN / BACPro methodology:</p>
-                <ul>
-                    <li>Duplicate Addressing (4 checks): Device Address, Instance Number, Network Number, BBMD</li>
-                    <li>Unreachable Devices (2 checks): Fully, Partially</li>
-                    <li>Router Issues (2 checks): Backpressure, Rejecting Messages</li>
-                    <li>Error Messages (4 checks): Interoperability, Operational, Programming, Unknown Type</li>
-                    <li>Excessive Traffic (7 checks): Broadcast, COV, Max Master, Read Rate, Write Rate, Token Hold, TrendLog</li>
-                    <li>MS/TP Health (4 checks): Token Time, Devices/Segment, Lost Tokens, Addressing Gap</li>
-                    <li>Other (5 checks): Checksum, Global Discovery, Slow Response, Unacked, Security</li>
-                </ul>
-                <p>Each check shows <strong>✅ Pass</strong>, <strong>⚠️ Warning</strong>, or <strong>❌ Failed</strong> with color-coded rows and fix recommendations.</p>
-                <h3>Device Browser</h3>
-                <p>Table of all detected BACnet devices with Device ID, IP, MAC, Type, Vendor, Status (Online/Offline/Intermittent), First/Last Seen. Filterable and sortable.</p>
-                <h3>Traffic Charts</h3>
-                <p>Protocol Distribution bar chart + Top Talkers bar chart with dark theme.</p>
-                <h3>Export</h3>
-                <p>CSV export with all diagnostics + offenders list. PDF-ready HTML report via browser print.</p>
-            </section>
-
-            <!-- ── TROUBLESHOOTING ── -->
-            <section class="section" id="troubleshooting">
-                <h2>🔧 Troubleshooting</h2>
-
-                <h3>Hashcat does not start</h3>
-                <ul>
-                    <li>Verify the wordlist file exists and is readable.</li>
-                    <li>If overriding the path, select the actual <code>hashcat.exe</code> executable.</li>
-                    <li>Reinstall elevated so the bundled Hashcat folder is added to PATH.</li>
-                    <li>Check: <code>hashcat --help</code> in a new command window.</li>
-                </ul>
-
-                <h3>Some files fail to analyze</h3>
-                <p>Failed files are reported after processing. Convert PCAPNG to PCAP:</p>
-                <pre><code>tshark -F pcap -r input.pcapng -w output.pcap</code></pre>
-
-                <h3>Desktop shortcut not created</h3>
-                <p>Check <code>C:\Users\Public\Desktop\BruteShark Desktop Studio.lnk</code>. The per-machine installer places shortcuts on the Public Desktop for all users.</p>
-
-                <h3>Upgrade from previous version fails</h3>
-                <p>Uninstall the old version from Settings → Apps first, then install the new MSI. The installer handles upgrades from v1.x and v2.0.x automatically.</p>
-
-                <h3>Large captures feel slow</h3>
-                <ul>
-                    <li>Disable unnecessary modules to reduce analysis time.</li>
-                    <li>Session reconstruction is the most resource-intensive — disable if not needed.</li>
-                    <li>Use a BPF filter during live capture to reduce noise.</li>
-                    <li>Split large captures into smaller files before analysis.</li>
-                </ul>
-
-                <div class="footer-note">
-                    <strong>BruteShark Studio v2.3.0</strong> — Professional Edition<br>
-                    Repository: <a href="https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro" style="color: var(--accent)">github.com/Ayman-Elbanhawy/BruteSharkStudioPro</a><br>
-                    License: GNU General Public License v3.0<br>
-                    Developer: Ayman Elbanhawy / <a href="https://softwaremile.com" style="color: var(--accent)">softwaremile.com</a>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <script>
-        // Tab switching
-        (function () {
-            document.querySelectorAll('[data-tabs]').forEach(shell => {
-                const buttons = shell.querySelectorAll('.tab-button');
-                const panels = shell.querySelectorAll('.tab-panel');
-                buttons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const targetId = btn.getAttribute('data-tab');
-                        buttons.forEach(b => b.setAttribute('aria-selected', 'false'));
-                        panels.forEach(p => p.classList.remove('active'));
-                        btn.setAttribute('aria-selected', 'true');
-                        const target = shell.querySelector('#' + targetId);
-                        if (target) target.classList.add('active');
-                    });
-                });
-            });
-        }());
-
-        // Search functionality
-        function searchHelp() {
-            const query = document.getElementById('search-box').value.toLowerCase();
-            const sections = document.querySelectorAll('.section');
-            const navLinks = document.querySelectorAll('.nav-group a');
-            
-            sections.forEach(s => s.style.display = '');
-            navLinks.forEach(a => a.style.opacity = '');
-            
-            if (query.length < 2) return;
-            
-            sections.forEach(s => {
-                const text = s.textContent.toLowerCase();
-                s.style.display = text.includes(query) ? '' : 'none';
-            });
-            
-            navLinks.forEach(a => {
-                const href = a.getAttribute('href');
-                if (href) {
-                    const target = document.querySelector(href);
-                    if (target && target.style.display === 'none') {
-                        a.style.opacity = '0.4';
-                    }
-                }
-            });
+<div class="layout">
+    <aside class="sidebar">
+        <h1 class="brand">BruteShark Studio</h1>
+        <div class="version">Help Manual v2.3.0</div>
+        <input id="search" type="search" placeholder="Search help topics" oninput="filterSections()">
+
+        <nav>
+            <div class="nav-group">
+                <h2>Start</h2>
+                <a href="#overview">Overview</a>
+                <a href="#install">Install and Requirements</a>
+                <a href="#quick-start">Quick Start</a>
+                <a href="#main-window">Main Window</a>
+            </div>
+            <div class="nav-group">
+                <h2>Workflows</h2>
+                <a href="#offline-analysis">Offline Capture Analysis</a>
+                <a href="#live-capture">Live Capture</a>
+                <a href="#navigation">Result Navigation</a>
+                <a href="#exporting">Exporting Evidence</a>
+                <a href="#projects">Save and Open Projects</a>
+                <a href="#hashcat">Hashcat</a>
+            </div>
+            <div class="nav-group">
+                <h2>Reference</h2>
+                <a href="#modules">Modules and Views</a>
+                <a href="#toolbar">Toolbar and Shortcuts</a>
+                <a href="#troubleshooting">Troubleshooting</a>
+                <a href="#security">Responsible Use</a>
+            </div>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="hero" id="overview">
+            <h1>BruteShark Desktop Studio v2.3.0</h1>
+            <p>
+                BruteShark Desktop Studio is a Windows network forensic analysis application for reviewing
+                packet captures, reconstructing sessions, extracting credentials and hashes, detecting suspicious
+                traffic, fingerprinting TLS/SSH activity, carving files, and exporting professional evidence reports.
+            </p>
+            <div class="meta-grid">
+                <div class="meta"><strong>Primary users</strong><span>Incident responders, security analysts, network engineers, lab researchers.</span></div>
+                <div class="meta"><strong>Inputs</strong><span>PCAP, PCAPNG, CAP, and live network capture streams.</span></div>
+                <div class="meta"><strong>Outputs</strong><span>Tables, carved artifacts, Hashcat files, HTML reports, and project files.</span></div>
+                <div class="meta"><strong>Installer bundle</strong><span>Desktop app, help manual, README, screenshot, and Hashcat v7.1.2.</span></div>
+            </div>
+        </div>
+
+        <section id="install">
+            <h2>Install and Requirements</h2>
+            <p>Install the MSI from the repository release folder:</p>
+            <pre>release\BruteSharkDesktopStudioInstaller.msi</pre>
+            <p>The installer creates desktop and Start menu shortcuts and installs Hashcat under the application folder.</p>
+            <h3>Recommended environment</h3>
+            <ul>
+                <li>Windows 10 or later.</li>
+                <li>.NET 8 Desktop Runtime, if not already available on the workstation.</li>
+                <li>Npcap or a compatible capture driver for live capture.</li>
+                <li>Administrator rights for installer execution and some live capture interfaces.</li>
+                <li>Enough disk space for carved files, exported reports, and large PCAP processing.</li>
+            </ul>
+        </section>
+
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+            <ol>
+                <li>Launch <strong>BruteShark Desktop Studio</strong>.</li>
+                <li>Click <code>+ Add</code> and select one or more capture files.</li>
+                <li>Keep <code>TCP Sessions: ON</code> and <code>UDP Sessions: ON</code> enabled for deeper parsing.</li>
+                <li>Confirm the desired modules are checked in the <strong>Modules</strong> panel.</li>
+                <li>Click <code>Run</code> or <code>Analyze</code>.</li>
+                <li>Use the left navigation tree to inspect credentials, hashes, sessions, files, detections, fingerprints, protocols, and statistics.</li>
+                <li>Click <code>Export</code> to write evidence artifacts and a full HTML report.</li>
+                <li>Click <code>Save</code> to preserve the investigation as a <code>.bsproj</code> file.</li>
+            </ol>
+            <div class="callout success">
+                <strong>Good practice:</strong> Start with a small capture to validate module selection, then process larger collections once the workflow is confirmed.
+            </div>
+        </section>
+
+        <section id="main-window">
+            <h2>Main Window</h2>
+            <div class="image-frame">
+                <img src="../readme_media/BruteSharkDesktopStudio_Main_v2.png" alt="BruteShark Desktop Studio v2.3 main window">
+                <div class="caption">Updated v2.3 desktop layout with visible navigation, toolbar help button, theme toggle, and scrollable result panes.</div>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Area</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Files Analyzing</td><td>Add capture files, remove selected files, and run offline analysis.</td></tr>
+                    <tr><td>Modules</td><td>Turn individual analyzers on or off before processing.</td></tr>
+                    <tr><td>Options</td><td>Enable or disable TCP and UDP session reconstruction.</td></tr>
+                    <tr><td>Actions</td><td>Export all current results or clear the workspace.</td></tr>
+                    <tr><td>Live Capture</td><td>Select an interface, apply a BPF filter, enable promiscuous mode, and start or stop capture.</td></tr>
+                    <tr><td>Lower toolbar</td><td>Quick access to Add, Run, Export, Clear, Save, Open, PDF-ready report, Help, and theme toggle.</td></tr>
+                    <tr><td>Side navigation</td><td>Scrollable tree of investigation views and tools.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="offline-analysis">
+            <h2>Offline Capture Analysis</h2>
+            <p>Offline analysis is the safest and most repeatable workflow for forensic review.</p>
+            <ol>
+                <li>Add capture files through <code>+ Add</code> or the large plus button.</li>
+                <li>Remove unwanted captures with the minus button.</li>
+                <li>Use module checkboxes to limit analysis scope when working with very large captures.</li>
+                <li>Click <code>Run</code> to process all loaded captures.</li>
+                <li>Watch the progress bar and file status column for processing state.</li>
+            </ol>
+            <h3>Session reconstruction options</h3>
+            <p>
+                Leave TCP and UDP session reconstruction enabled when you need file carving, credential parsing,
+                VoIP extraction, and application-layer protocol analysis. Disable a session type only when you need
+                faster high-level processing and understand the loss of deeper parsing.
+            </p>
+        </section>
+
+        <section id="live-capture">
+            <h2>Live Capture</h2>
+            <ol>
+                <li>Select a network interface in the dropdown.</li>
+                <li>Optionally enter a BPF filter such as <code>tcp port 443</code>, <code>udp</code>, or <code>host 192.168.1.10</code>.</li>
+                <li>Enable <strong>Promiscuous Mode</strong> only when the investigation requires it.</li>
+                <li>Click <code>Start</code>.</li>
+                <li>Click <code>Stop</code> before exporting a stable result set.</li>
+            </ol>
+            <div class="callout warning">
+                <strong>Capture driver note:</strong> Live capture depends on a compatible capture driver such as Npcap and may require elevated privileges.
+            </div>
+        </section>
+
+        <section id="navigation">
+            <h2>Result Navigation</h2>
+            <p>The left navigation tree is scrollable and groups the application into investigation domains:</p>
+            <div class="card-grid">
+                <div class="card"><strong>Credentials</strong><span>Passwords and hashes.</span></div>
+                <div class="card"><strong>Network</strong><span>Map, sessions, and DNS.</span></div>
+                <div class="card"><strong>Data</strong><span>Carved files and VoIP calls.</span></div>
+                <div class="card"><strong>Detection &amp; Alerts</strong><span>Alerts, C2 beacons, and rule matches.</span></div>
+                <div class="card"><strong>Fingerprints &amp; TLS</strong><span>JA3/JA3S, TLS certificates, SSH.</span></div>
+                <div class="card"><strong>Protocol Analysis</strong><span>HTTP, SMB, DHCP, and ARP.</span></div>
+                <div class="card"><strong>Tools</strong><span>Hex viewer and supporting utilities.</span></div>
+                <div class="card"><strong>Statistics</strong><span>Protocol and flow summaries.</span></div>
+            </div>
+            <p>Hover over navigation nodes and buttons to see tooltips. Large result tables support vertical and horizontal scrolling.</p>
+        </section>
+
+        <section id="exporting">
+            <h2>Exporting Evidence</h2>
+            <p>Click <code>Export</code> and select an output folder. The application writes the artifacts available in the current case.</p>
+            <table>
+                <thead>
+                    <tr><th>Export Type</th><th>Examples</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Investigation data</td><td>Network map, nodes, DNS mappings, sessions, VoIP data, carved files.</td></tr>
+                    <tr><td>Detection data</td><td>Beacon results, detection rule matches, payload alerts, DNS exfiltration alerts.</td></tr>
+                    <tr><td>Fingerprints</td><td>JA3/JA3S fingerprints, SSH fingerprints, TLS certificates.</td></tr>
+                    <tr><td>Protocol data</td><td>HTTP transactions and DHCP leases.</td></tr>
+                    <tr><td>Credential data</td><td>Hashcat-ready grouped hash exports.</td></tr>
+                    <tr><td>Report</td><td>Full interactive HTML forensic report.</td></tr>
+                </tbody>
+            </table>
+            <p>
+                The <code>PDF</code> toolbar button exports a PDF-ready HTML report. Open it in a browser and choose
+                <code>Print</code> then <code>Save as PDF</code> to create a PDF file.
+            </p>
+        </section>
+
+        <section id="projects">
+            <h2>Save and Open Projects</h2>
+            <p>Use project files when you need to pause, hand off, or preserve a case.</p>
+            <ul>
+                <li><code>Save</code> or <code>Ctrl+S</code> writes a <code>.bsproj</code> project file.</li>
+                <li><code>Open</code> or <code>Ctrl+O</code> restores a saved project.</li>
+                <li><code>Clear</code> resets the current workspace after confirmation of workflow intent.</li>
+            </ul>
+        </section>
+
+        <section id="hashcat">
+            <h2>Hashcat Workflow</h2>
+            <p>Hashcat v7.1.2 is bundled with the installer.</p>
+            <ol>
+                <li>Analyze a capture that contains authentication material.</li>
+                <li>Open <strong>Credentials &gt; Hashes</strong>.</li>
+                <li>Select the hash type.</li>
+                <li>Choose an output folder and a wordlist.</li>
+                <li>Optionally add extra Hashcat arguments.</li>
+                <li>Click <code>Create Hashcat file</code> or <code>Crack with Hashcat</code>.</li>
+            </ol>
+            <table>
+                <thead>
+                    <tr><th>Hash Type</th><th>Hashcat Mode</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>NTLMv1</td><td>5500</td></tr>
+                    <tr><td>NTLMv2</td><td>5600</td></tr>
+                    <tr><td>Kerberos AS-REQ RC4</td><td>7500</td></tr>
+                    <tr><td>Kerberos AS-REP RC4</td><td>18200</td></tr>
+                    <tr><td>Kerberos TGS-REP RC4</td><td>13100</td></tr>
+                    <tr><td>Kerberos TGS-REP AES128</td><td>19600</td></tr>
+                    <tr><td>Kerberos TGS-REP AES256</td><td>19700</td></tr>
+                    <tr><td>HTTP Digest MD5</td><td>11400</td></tr>
+                    <tr><td>CRAM-MD5</td><td>16400</td></tr>
+                    <tr><td>POP3 APOP</td><td>9900</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="modules">
+            <h2>Modules and Views</h2>
+            <p>The following module families are available from the main UI:</p>
+            <p>
+                <span class="pill">Passwords</span>
+                <span class="pill">Hashes</span>
+                <span class="pill">Network Map</span>
+                <span class="pill">Sessions</span>
+                <span class="pill">DNS</span>
+                <span class="pill">Files</span>
+                <span class="pill">VoIP Calls</span>
+                <span class="pill">Alerts</span>
+                <span class="pill">C2 Beacons</span>
+                <span class="pill">Rule Matches</span>
+                <span class="pill">JA3/JA3S</span>
+                <span class="pill">TLS Certificates</span>
+                <span class="pill">SSH</span>
+                <span class="pill">HTTP</span>
+                <span class="pill">SMB</span>
+                <span class="pill">DHCP</span>
+                <span class="pill">ARP</span>
+                <span class="pill">Anomalies</span>
+                <span class="pill">DNS Exfiltration</span>
+                <span class="pill">Hex Viewer</span>
+                <span class="pill">Protocol Stats</span>
+                <span class="pill">Timeline</span>
+                <span class="pill">Flow Statistics</span>
+                <span class="pill">BACnet Analysis</span>
+                <span class="pill">Capture Compare</span>
+                <span class="pill">Audit Log</span>
+            </p>
+            <div class="callout">
+                <strong>Preview nodes:</strong> Plugin SDK, Live BACnet, and Email/SMS Alerts are visible as roadmap or preview entries and may not provide production workflows in this build.
+            </div>
+        </section>
+
+        <section id="toolbar">
+            <h2>Toolbar and Shortcuts</h2>
+            <table>
+                <thead>
+                    <tr><th>Control</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>+ Add</code></td><td>Add capture files.</td></tr>
+                    <tr><td><code>Run</code></td><td>Analyze loaded files.</td></tr>
+                    <tr><td><code>Export</code></td><td>Export result artifacts and HTML report.</td></tr>
+                    <tr><td><code>Clear</code></td><td>Reset the current results.</td></tr>
+                    <tr><td><code>Save</code> / <code>Ctrl+S</code></td><td>Save project as <code>.bsproj</code>.</td></tr>
+                    <tr><td><code>Open</code> / <code>Ctrl+O</code></td><td>Open a saved project.</td></tr>
+                    <tr><td><code>PDF</code> / <code>Ctrl+P</code></td><td>Export a PDF-ready HTML report.</td></tr>
+                    <tr><td><code>?</code></td><td>Open this help manual.</td></tr>
+                    <tr><td>Moon/Sun button</td><td>Toggle dark and light theme.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="troubleshooting">
+            <h2>Troubleshooting</h2>
+            <h3>The app cannot capture live traffic</h3>
+            <ul>
+                <li>Install or repair Npcap.</li>
+                <li>Run the application as administrator.</li>
+                <li>Confirm a network interface is selected.</li>
+                <li>Remove or simplify the BPF filter and try again.</li>
+            </ul>
+            <h3>Results look incomplete</h3>
+            <ul>
+                <li>Confirm TCP/UDP session reconstruction is enabled.</li>
+                <li>Verify relevant modules are checked before running analysis.</li>
+                <li>Use a complete capture rather than a truncated packet sample.</li>
+            </ul>
+            <h3>Hashcat does not start</h3>
+            <ul>
+                <li>Confirm Hashcat exists under the installed <code>Hashcat</code> folder.</li>
+                <li>Restart the terminal or workstation if PATH was updated during installation.</li>
+                <li>Provide a valid wordlist path.</li>
+            </ul>
+            <h3>The help button cannot open this manual</h3>
+            <p>The MSI installs this file under <code>docs\BruteSharkStudioHelp.html</code> next to the application folder. If the file is missing, repair the installation or reinstall the MSI.</p>
+        </section>
+
+        <section id="security">
+            <h2>Responsible Use</h2>
+            <p>
+                Use BruteShark Desktop Studio only on captures and networks you are authorized to inspect.
+                Packet captures can contain credentials, personal data, and regulated information. Store exports
+                and project files according to your organization's evidence handling and data retention policies.
+            </p>
+        </section>
+
+        <p class="footer">
+            BruteShark Desktop Studio v2.3.0. Updated April 30, 2026.
+        </p>
+    </main>
+</div>
+
+<script>
+function filterSections() {
+    const query = document.getElementById('search').value.trim().toLowerCase();
+    const sections = document.querySelectorAll('main section, main .hero');
+    sections.forEach(section => {
+        if (!query) {
+            section.style.display = '';
+            return;
         }
-    </script>
+        section.style.display = section.innerText.toLowerCase().includes(query) ? '' : 'none';
+    });
+}
+</script>
 </body>
 </html>

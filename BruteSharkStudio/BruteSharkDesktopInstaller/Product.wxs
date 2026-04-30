@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- BruteShark Studio v2.0 Installer -->
+<!-- BruteShark Studio v2.3 Installer -->
 <!-- Code updates by Ayman Elbanhawy (c) Softwaremile.com -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	
 	<Product 
 		Id="*" 
 		Name="BruteShark Desktop Studio" 
-		Language="1033" Version="2.0.2.0" 
+		Language="1033" Version="2.3.0.0"
 		Manufacturer="Ayman Elbanhawy / Softwaremile.com" 
 		UpgradeCode="9bec2dfd-0f30-466a-9077-cf86db101cac">
 		
@@ -19,6 +19,7 @@
 		<Feature Id="ProductFeature" Title="BruteShark Desktop Studio" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 			<ComponentGroupRef Id="HashcatComponents" />
+			<ComponentGroupRef Id="DocumentationComponents" />
 			<ComponentRef Id="ApplicationShortcutDesktop"/>
 			<ComponentRef Id="ApplicationStartMenuShortcut"/>
 			<ComponentRef Id="HashcatPathEnvironment"/>
@@ -34,7 +35,7 @@
 				<Component Id="ApplicationShortcutDesktop" Guid="EE875EB0-FCFF-454F-8FF6-2F59B1085D5A">
 					<Shortcut Id="ApplicationDesktopShortcut"
 						Name="BruteShark Desktop Studio"
-						Description="Network Forensic Analysis Tool v2.0 - Extract credentials, detect C2 beacons, fingerprint TLS"
+						Description="Network Forensic Analysis Tool v2.3 - Extract credentials, detect C2 beacons, fingerprint TLS"
 						Target="[INSTALLFOLDER]BruteSharkDesktopStudio.exe"
 						WorkingDirectory="INSTALLFOLDER"/>
 					<RemoveFolder Id="DesktopFolder" On="uninstall"/>
@@ -53,7 +54,7 @@
 					<Component Id="ApplicationStartMenuShortcut" Guid="F1A2B3C4-D5E6-7890-ABCD-EF1234567890">
 						<Shortcut Id="StartMenuShortcut"
 							Name="BruteShark Desktop Studio"
-							Description="Network Forensic Analysis Tool v2.0"
+							Description="Network Forensic Analysis Tool v2.3"
 							Target="[INSTALLFOLDER]BruteSharkDesktopStudio.exe"
 							WorkingDirectory="INSTALLFOLDER"/>
 						<RemoveFolder Id="AppProgramMenuFolder" On="uninstall"/>
@@ -78,6 +79,8 @@
 						</Component>
 					</Directory>
 					<Directory Id="HASHCATFOLDER" Name="Hashcat" />
+					<Directory Id="DOCSFOLDER" Name="docs" />
+					<Directory Id="READMEFOLDER" Name="readme_media" />
 				</Directory>
 			</Directory>
 			
@@ -102,6 +105,9 @@
 			</Component>
 			<Component Id="BruteSharkDesktopStudio.runtimeconfig.json">
 				<File Id="BruteSharkDesktopStudio.runtimeconfig.json" Source="$(var.BruteSharkDesktop.TargetDir)BruteSharkDesktopStudio.runtimeconfig.json" />
+			</Component>
+			<Component Id="BruteSharkReadme">
+				<File Id="BruteSharkReadme" Source="$(var.BruteSharkRepoRoot)\README.md" />
 			</Component>
 
 			<!-- BruteShark Core Libraries -->
@@ -187,6 +193,17 @@
 				<File Id="websocket.sharp.dll" Source="$(var.BruteSharkDesktop.TargetDir)websocket-sharp.dll" />
 			</Component>
 
+		</ComponentGroup>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="DocumentationComponents">
+			<Component Id="HelpManual" Directory="DOCSFOLDER" Guid="0E3CB6A0-4B2E-47F5-9B55-6E54A3703F5E">
+				<File Id="BruteSharkStudioHelpHtml" Source="$(var.BruteSharkRepoRoot)\docs\BruteSharkStudioHelp.html" KeyPath="yes" />
+			</Component>
+			<Component Id="MainScreenshot" Directory="READMEFOLDER" Guid="FB6315E2-01B4-439C-9046-70A2C3C917F4">
+				<File Id="BruteSharkMainScreenshot" Source="$(var.BruteSharkRepoRoot)\readme_media\BruteSharkDesktopStudio_Main_v2.png" KeyPath="yes" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 

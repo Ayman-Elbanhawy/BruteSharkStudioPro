@@ -122,7 +122,7 @@ namespace BruteSharkDesktop
                         response = JsonSerializer.Serialize(new
                         {
                             status = _status,
-                            version = "2.0.1",
+                            version = "2.3.0",
                             timestamp = DateTime.UtcNow.ToString("o"),
                             modules = _lastResults?.GetType().GetProperties().Length ?? 0
                         });
@@ -183,7 +183,7 @@ namespace BruteSharkDesktop
                         response = JsonSerializer.Serialize(new
                         {
                             name = "BruteShark Studio REST API",
-                            version = "2.0.1",
+                            version = "2.3.0",
                             endpoints = new[]
                             {
                                 "GET /api/status  — server status",

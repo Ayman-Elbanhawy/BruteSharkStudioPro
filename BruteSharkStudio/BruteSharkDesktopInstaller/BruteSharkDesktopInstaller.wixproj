@@ -14,7 +14,9 @@
     <WixToolPath Condition=" '$(WixToolPath)' == '' AND Exists('$(WixPackageToolsPath)candle.exe') ">$(WixPackageToolsPath)</WixToolPath>
     <WixTasksPath Condition=" '$(WixTasksPath)' == '' AND Exists('$(WixPackageToolsPath)WixTasks.dll') ">$(WixPackageToolsPath)WixTasks.dll</WixTasksPath>
     <WixExtDir Condition=" '$(WixExtDir)' == '' AND Exists('$(WixPackageToolsPath)WixUIExtension.dll') ">$(WixPackageToolsPath)</WixExtDir>
-    <DesktopTargetDir>$(MSBuildProjectDirectory)\..\BruteSharkDesktop\bin\$(Configuration)\net8.0-windows7.0\\</DesktopTargetDir>
+    <DesktopTargetDir Condition=" '$(Platform)' == '' Or '$(Platform)' == 'AnyCPU' ">$(MSBuildProjectDirectory)\..\BruteSharkDesktop\bin\$(Configuration)\net8.0-windows7.0\\</DesktopTargetDir>
+    <DesktopTargetDir Condition=" '$(Platform)' != '' And '$(Platform)' != 'AnyCPU' ">$(MSBuildProjectDirectory)\..\BruteSharkDesktop\bin\$(Platform)\$(Configuration)\net8.0-windows7.0\\</DesktopTargetDir>
+    <BruteSharkRepoRoot>$(MSBuildProjectDirectory)\..\..</BruteSharkRepoRoot>
     <HashcatSourceDir>$(MSBuildProjectDirectory)\Assets\Hashcat</HashcatSourceDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -55,7 +57,7 @@
     <MSBuild Projects="..\BruteSharkDesktop\BruteSharkDesktop.csproj" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
     <MakeDir Directories="$(MSBuildProjectDirectory)\$(IntermediateOutputPath);$(MSBuildProjectDirectory)\$(OutputPath)" />
     <Exec Command="&quot;$(WixToolPath)heat.exe&quot; dir &quot;$(HashcatSourceDir)&quot; -nologo -srd -sreg -gg -cg HashcatComponents -dr HASHCATFOLDER -var var.HashcatSourceDir -out &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)HashcatFiles.wxs&quot;" />
-    <Exec Command="&quot;$(WixToolPath)candle.exe&quot; -nologo &quot;-dBruteSharkDesktop.TargetDir=$(DesktopTargetDir)&quot; -ext &quot;$(WixExtDir)WixUIExtension.dll&quot; -out &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Product.wixobj&quot; &quot;$(MSBuildProjectDirectory)\Product.wxs&quot;" />
+    <Exec Command="&quot;$(WixToolPath)candle.exe&quot; -nologo &quot;-dBruteSharkDesktop.TargetDir=$(DesktopTargetDir)&quot; &quot;-dBruteSharkRepoRoot=$(BruteSharkRepoRoot)&quot; -ext &quot;$(WixExtDir)WixUIExtension.dll&quot; -out &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Product.wixobj&quot; &quot;$(MSBuildProjectDirectory)\Product.wxs&quot;" />
     <Exec Command="&quot;$(WixToolPath)candle.exe&quot; -nologo &quot;-dHashcatSourceDir=$(HashcatSourceDir)&quot; -out &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)HashcatFiles.wixobj&quot; &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)HashcatFiles.wxs&quot;" />
     <Exec Command="&quot;$(WixToolPath)light.exe&quot; -nologo -ext &quot;$(WixExtDir)WixUIExtension.dll&quot; -cultures:en-us -b &quot;$(MSBuildProjectDirectory)&quot; -out &quot;$(MSBuildProjectDirectory)\$(OutputPath)$(OutputName).msi&quot; &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Product.wixobj&quot; &quot;$(MSBuildProjectDirectory)\$(IntermediateOutputPath)HashcatFiles.wixobj&quot;" />
   </Target>

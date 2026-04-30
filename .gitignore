@@ -34,6 +34,9 @@ release/*.zip
 *.DotSettings.user
 appsettings.*.json
 
+# Generated exports (reports, screenshots, etc.)
+exports/
+
 # OS
 .DS_Store
 Thumbs.db

@@ -59,6 +59,11 @@ namespace BruteSharkDesktop
         private FlowStatsUserControl _flowStatsUserControl;
         private CaptureCompareUserControl _captureCompareUserControl;
 
+        private ToolTip _uiToolTip;
+        private TableLayoutPanel _resultsShellLayout;
+        private Button _helpToolbarButton;
+        private Button _themeToggleButton;
+
         // Phase 3: Detection & intelligence engine
         private PcapAnalyzer.DetectionRuleEngine _detectionEngine;
         private PcapAnalyzer.BeaconDetectionModule _beaconModule;
@@ -129,9 +134,11 @@ namespace BruteSharkDesktop
             InitilizeInterfacesComboBox();
             AddModuleTreeNodes();
             this.modulesTreeView.ExpandAll();
+            ConfigureEnterpriseLayout();
+            AddHelpButton();
             ApplyProfessionalTheme();
             InitializeToolTips();
-            AddHelpButton();
+            SelectInitialNavigationNode();
             CheckForUpdates();
             AuditLog("Start", "BruteShark Desktop Studio started");
 
@@ -141,77 +148,412 @@ namespace BruteSharkDesktop
         }
 
         /// <summary>
-        /// Adds a Help button that opens the comprehensive HTML help file.
+        /// Builds the results toolbar with quick actions, help, and theme controls.
         /// </summary>
         private void AddHelpButton()
         {
-            var helpBtn = new Button
+            if (_resultsShellLayout != null)
             {
-                Text = "?  Help / Manual",
-                Name = "helpButton",
-                Location = new Point(10, 10),
-                Size = new Size(265, 32),
-                FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(0x45, 0x47, 0x5A),
-                ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4),
-                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                return;
+            }
+
+            var resultsToolbar = new TableLayoutPanel
+            {
+                Name = "resultsToolbar",
+                ColumnCount = 2,
+                Dock = DockStyle.Fill,
+                Margin = new Padding(0),
+                Padding = new Padding(8, 5, 8, 5),
+                BackColor = Color.FromArgb(0x24, 0x28, 0x3A)
             };
-            helpBtn.FlatAppearance.BorderColor = Color.FromArgb(0x89, 0xB4, 0xFA);
-            helpBtn.FlatAppearance.BorderSize = 1;
-            helpBtn.Dock = DockStyle.Bottom;
-            this.modulesSplitContainer.Panel1.Controls.Add(helpBtn);
-            helpBtn.Click += (s, e) =>
+            resultsToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            resultsToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+
+            var primaryActions = new FlowLayoutPanel
             {
-                string helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "docs", "BruteSharkStudioHelp.html");
-                if (!File.Exists(helpPath))
-                    helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "docs", "BruteSharkStudioHelp.html");
-                if (!File.Exists(helpPath))
-                    helpPath = @"C:\WireSharkTools\BruteSharkPro\docs\BruteSharkStudioHelp.html";
-                if (File.Exists(helpPath))
-                {
-                    Process.Start(new ProcessStartInfo { FileName = helpPath, UseShellExecute = true });
-                }
-                else
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/blob/main/docs/BruteSharkStudioHelp.html",
-                        UseShellExecute = true
-                    });
-                }
+                Name = "primaryToolbarActions",
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false,
+                Margin = new Padding(0),
+                BackColor = Color.Transparent
             };
 
-            // 🌓 Theme toggle — top-right of results panel, always visible
-            var themeBtn = new Button
+            primaryActions.Controls.Add(CreateToolbarButton("+ Add", "Add capture files", (s, e) => addFilesButton_Click(s, e)));
+            primaryActions.Controls.Add(CreateToolbarButton("Run", "Analyze loaded files", (s, e) => RunButton_Click(s, e)));
+            primaryActions.Controls.Add(CreateToolbarButton("Export", "Export analysis results", (s, e) => exportResutlsButton_Click(s, e)));
+            primaryActions.Controls.Add(CreateToolbarButton("Clear", "Clear the current workspace", (s, e) => clearResutlsButton_Click(s, e)));
+            primaryActions.Controls.Add(CreateToolbarButton("Save", "Save project", (s, e) => SaveProject()));
+            primaryActions.Controls.Add(CreateToolbarButton("Open", "Open saved project", (s, e) => LoadProject()));
+            primaryActions.Controls.Add(CreateToolbarButton("PDF", "Export PDF report", (s, e) => ExportPdfReport()));
+
+            var utilityActions = new FlowLayoutPanel
             {
-                Text = "🌙",
-                Name = "themeToggleBtn",
-                Size = new Size(40, 30),
+                Name = "utilityToolbarActions",
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.RightToLeft,
+                WrapContents = false,
+                Margin = new Padding(0),
+                BackColor = Color.Transparent
+            };
+
+            _themeToggleButton = CreateToolbarButton("🌙", "Toggle dark/light theme", (s, e) => ToggleTheme());
+            _themeToggleButton.Name = "themeToggleButton";
+            _themeToggleButton.Width = 40;
+            _themeToggleButton.Font = new Font("Segoe UI", 12f, FontStyle.Regular);
+
+            _helpToolbarButton = CreateToolbarButton("?", "Open help and manual", (s, e) => OpenHelpManual());
+            _helpToolbarButton.Name = "helpToolbarButton";
+            _helpToolbarButton.Width = 40;
+            _helpToolbarButton.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
+
+            utilityActions.Controls.Add(_themeToggleButton);
+            utilityActions.Controls.Add(_helpToolbarButton);
+
+            resultsToolbar.Controls.Add(primaryActions, 0, 0);
+            resultsToolbar.Controls.Add(utilityActions, 1, 0);
+
+            _resultsShellLayout = new TableLayoutPanel
+            {
+                Name = "resultsShellLayout",
+                ColumnCount = 1,
+                RowCount = 2,
+                Dock = DockStyle.Fill,
+                Margin = new Padding(0),
+                BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E)
+            };
+            _resultsShellLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
+            _resultsShellLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            _resultsShellLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+            this.mainSplitContainer.Panel2.Controls.Remove(this.secondaryLowerSplitContainer);
+            this.secondaryLowerSplitContainer.Dock = DockStyle.Fill;
+            _resultsShellLayout.Controls.Add(resultsToolbar, 0, 0);
+            _resultsShellLayout.Controls.Add(this.secondaryLowerSplitContainer, 0, 1);
+            this.mainSplitContainer.Panel2.Controls.Add(_resultsShellLayout);
+        }
+
+        private Button CreateToolbarButton(string text, string tooltip, EventHandler onClick)
+        {
+            var button = new Button
+            {
+                Text = text,
+                AutoSize = false,
+                Size = new Size(Math.Max(40, text.Length * 10 + 22), 30),
+                Margin = new Padding(0, 0, 6, 0),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(0x45, 0x47, 0x5A),
-                ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4),
-                Font = new Font("Segoe UI", 14f),
+                BackColor = Color.FromArgb(0x35, 0x3A, 0x52),
+                ForeColor = Color.FromArgb(0xEC, 0xF2, 0xFF),
+                Font = new Font("Segoe UI", 9f, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                Dock = DockStyle.Right
+                UseVisualStyleBackColor = false,
+                Tag = tooltip
             };
-            themeBtn.FlatAppearance.BorderColor = Color.FromArgb(0x89, 0xB4, 0xFA);
-            themeBtn.FlatAppearance.BorderSize = 1;
-            themeBtn.Click += (s, e) =>
+            button.FlatAppearance.BorderColor = Color.FromArgb(0x5C, 0x67, 0x88);
+            button.FlatAppearance.BorderSize = 1;
+            button.Click += onClick;
+            _uiToolTip?.SetToolTip(button, tooltip);
+            return button;
+        }
+
+        private void OpenHelpManual()
+        {
+            string helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "docs", "BruteSharkStudioHelp.html");
+            if (!File.Exists(helpPath))
+                helpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "docs", "BruteSharkStudioHelp.html");
+            if (!File.Exists(helpPath))
+                helpPath = @"C:\WireSharkTools\BruteSharkPro\docs\BruteSharkStudioHelp.html";
+
+            if (File.Exists(helpPath))
             {
-                ToggleTheme();
-                themeBtn.Text = _isDarkTheme ? "🌙" : "☀️";
+                Process.Start(new ProcessStartInfo { FileName = helpPath, UseShellExecute = true });
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/blob/main/docs/BruteSharkStudioHelp.html",
+                    UseShellExecute = true
+                });
+            }
+        }
+
+        private void ConfigureEnterpriseLayout()
+        {
+            this.SuspendLayout();
+            ConfigureTopCommandArea();
+            ConfigureNavigationPane();
+            ConfigureGlobalScrollBars();
+            this.ResumeLayout(true);
+        }
+
+        private void ConfigureTopCommandArea()
+        {
+            this.mainSplitContainer.Panel1.SuspendLayout();
+            this.mainSplitContainer.Panel1.Controls.Clear();
+            this.mainSplitContainer.Panel1.Padding = new Padding(8);
+            this.mainSplitContainer.Panel1.AutoScroll = true;
+            this.mainSplitContainer.SplitterDistance = Math.Max(this.mainSplitContainer.SplitterDistance, 188);
+
+            ConfigureFilesAnalyzingGroup();
+            ConfigureModulesGroup();
+            ConfigureOptionsGroup();
+            ConfigureLiveCaptureGroup();
+
+            var actionsGroupBox = new GroupBox
+            {
+                Name = "actionsGroupBox",
+                Text = "Actions",
+                Dock = DockStyle.Fill,
+                Margin = new Padding(6, 0, 0, 0),
+                Padding = new Padding(8, 22, 8, 8)
             };
-            var themeTip = new ToolTip();
-            themeTip.SetToolTip(themeBtn, "Toggle Dark/Light Theme");
 
-            // Create a small toolbar panel at the top of the results area
-            var toolBar = new Panel { Height = 34, Dock = DockStyle.Top, BackColor = Color.FromArgb(0x25, 0x25, 0x40) };
-            toolBar.Controls.Add(themeBtn);
+            var actionsLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                RowCount = 2,
+                ColumnCount = 1,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            actionsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            actionsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            exportResutlsButton.Text = "Export";
+            clearResutlsButton.Text = "Clear";
+            exportResutlsButton.Dock = DockStyle.Fill;
+            clearResutlsButton.Dock = DockStyle.Fill;
+            exportResutlsButton.Margin = new Padding(0, 0, 0, 4);
+            clearResutlsButton.Margin = new Padding(0);
+            actionsLayout.Controls.Add(exportResutlsButton, 0, 0);
+            actionsLayout.Controls.Add(clearResutlsButton, 0, 1);
+            actionsGroupBox.Controls.Add(actionsLayout);
 
-            // Add toolbar BEFORE the existing split container (so it docks on top)
-            this.mainSplitContainer.Panel2.Controls.Add(toolBar);
-            toolBar.BringToFront();
+            var commandLayout = new TableLayoutPanel
+            {
+                Name = "commandLayout",
+                Dock = DockStyle.Fill,
+                RowCount = 1,
+                ColumnCount = 5,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            commandLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
+            commandLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24F));
+            commandLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 13F));
+            commandLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10F));
+            commandLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 13F));
+            commandLayout.Controls.Add(filesAnalyzingGroupBox, 0, 0);
+            commandLayout.Controls.Add(modulesGroupBox, 1, 0);
+            commandLayout.Controls.Add(optionsGroupBox, 2, 0);
+            commandLayout.Controls.Add(actionsGroupBox, 3, 0);
+            commandLayout.Controls.Add(liveCaptureGroupBox, 4, 0);
+
+            this.mainSplitContainer.Panel1.Controls.Add(commandLayout);
+            this.mainSplitContainer.Panel1.ResumeLayout(true);
+        }
+
+        private void ConfigureFilesAnalyzingGroup()
+        {
+            filesAnalyzingGroupBox.Controls.Clear();
+            filesAnalyzingGroupBox.Dock = DockStyle.Fill;
+            filesAnalyzingGroupBox.Margin = new Padding(0, 0, 6, 0);
+            filesAnalyzingGroupBox.Padding = new Padding(8, 22, 8, 8);
+
+            addFilesButton.Text = "+";
+            removeFilesButton.Text = "-";
+            runButton.Text = "Analyze";
+
+            var fileButtonStack = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                RowCount = 2,
+                ColumnCount = 1,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            fileButtonStack.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            fileButtonStack.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            addFilesButton.Dock = DockStyle.Fill;
+            removeFilesButton.Dock = DockStyle.Fill;
+            addFilesButton.Margin = new Padding(0, 0, 4, 4);
+            removeFilesButton.Margin = new Padding(0, 0, 4, 0);
+            fileButtonStack.Controls.Add(addFilesButton, 0, 0);
+            fileButtonStack.Controls.Add(removeFilesButton, 0, 1);
+
+            filesListView.Dock = DockStyle.Fill;
+            filesListView.Margin = new Padding(0, 0, 8, 0);
+            filesListView.Scrollable = true;
+            filesListView.FullRowSelect = true;
+            filesListView.GridLines = false;
+            filesListView.Resize += (s, e) => ResizeFilesListColumns();
+
+            runButton.Dock = DockStyle.Fill;
+            runButton.Margin = new Padding(0);
+
+            var filesLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                RowCount = 1,
+                ColumnCount = 3,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            filesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
+            filesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            filesLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 118F));
+            filesLayout.Controls.Add(fileButtonStack, 0, 0);
+            filesLayout.Controls.Add(filesListView, 1, 0);
+            filesLayout.Controls.Add(runButton, 2, 0);
+            filesAnalyzingGroupBox.Controls.Add(filesLayout);
+            ResizeFilesListColumns();
+        }
+
+        private void ConfigureModulesGroup()
+        {
+            modulesGroupBox.Controls.Clear();
+            modulesGroupBox.Dock = DockStyle.Fill;
+            modulesGroupBox.Margin = new Padding(0, 0, 6, 0);
+            modulesGroupBox.Padding = new Padding(8, 22, 8, 8);
+            modulesCheckedListBox.Dock = DockStyle.Fill;
+            modulesCheckedListBox.CheckOnClick = true;
+            modulesCheckedListBox.HorizontalScrollbar = true;
+            modulesCheckedListBox.IntegralHeight = false;
+            modulesGroupBox.Controls.Add(modulesCheckedListBox);
+        }
+
+        private void ConfigureOptionsGroup()
+        {
+            optionsGroupBox.Controls.Clear();
+            optionsGroupBox.Dock = DockStyle.Fill;
+            optionsGroupBox.Margin = new Padding(0, 0, 6, 0);
+            optionsGroupBox.Padding = new Padding(8, 22, 8, 8);
+
+            buildTcpSessionsCheckBox.AutoSize = false;
+            buildUdpSessionsCheckBox.AutoSize = false;
+            buildTcpSessionsCheckBox.Dock = DockStyle.Fill;
+            buildUdpSessionsCheckBox.Dock = DockStyle.Fill;
+            buildTcpSessionsCheckBox.Text = "TCP Sessions: ON";
+            buildUdpSessionsCheckBox.Text = "UDP Sessions: ON";
+            buildTcpSessionsCheckBox.Margin = new Padding(0, 0, 0, 4);
+            buildUdpSessionsCheckBox.Margin = new Padding(0);
+
+            var optionsLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                RowCount = 2,
+                ColumnCount = 1,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            optionsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            optionsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            optionsLayout.Controls.Add(buildTcpSessionsCheckBox, 0, 0);
+            optionsLayout.Controls.Add(buildUdpSessionsCheckBox, 0, 1);
+            optionsGroupBox.Controls.Add(optionsLayout);
+        }
+
+        private void ConfigureLiveCaptureGroup()
+        {
+            liveCaptureGroupBox.Controls.Clear();
+            liveCaptureGroupBox.Dock = DockStyle.Fill;
+            liveCaptureGroupBox.Margin = new Padding(0);
+            liveCaptureGroupBox.Padding = new Padding(8, 22, 8, 8);
+
+            liveCaptureButton.Text = "Start";
+            stopCaptureButton.Text = "Stop";
+            liveCaptureButton.Dock = DockStyle.Fill;
+            stopCaptureButton.Dock = DockStyle.Fill;
+            interfacesComboBox.Dock = DockStyle.Fill;
+            filterTextBox.Dock = DockStyle.Fill;
+            promiscuousCheckBox.Dock = DockStyle.Fill;
+            promiscuousCheckBox.AutoSize = false;
+
+            var captureLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                RowCount = 4,
+                ColumnCount = 2,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            captureLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            captureLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            captureLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
+            captureLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+            captureLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+            captureLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            liveCaptureButton.Margin = new Padding(0, 0, 4, 4);
+            stopCaptureButton.Margin = new Padding(0, 0, 0, 4);
+            interfacesComboBox.Margin = new Padding(0, 0, 0, 4);
+            filterTextBox.Margin = new Padding(0, 0, 0, 4);
+            promiscuousCheckBox.Margin = new Padding(0);
+            captureLayout.Controls.Add(liveCaptureButton, 0, 0);
+            captureLayout.Controls.Add(stopCaptureButton, 1, 0);
+            captureLayout.Controls.Add(interfacesComboBox, 0, 1);
+            captureLayout.SetColumnSpan(interfacesComboBox, 2);
+            captureLayout.Controls.Add(filterTextBox, 0, 2);
+            captureLayout.SetColumnSpan(filterTextBox, 2);
+            captureLayout.Controls.Add(promiscuousCheckBox, 0, 3);
+            captureLayout.SetColumnSpan(promiscuousCheckBox, 2);
+            liveCaptureGroupBox.Controls.Add(captureLayout);
+        }
+
+        private void ResizeFilesListColumns()
+        {
+            if (filesListView.Columns.Count < 3)
+            {
+                return;
+            }
+
+            var availableWidth = Math.Max(260, filesListView.ClientSize.Width - SystemInformation.VerticalScrollBarWidth - 6);
+            sizeColumnHeader.Width = 90;
+            statusColumnHeader.Width = 90;
+            fileNameColumnHeader.Width = Math.Max(120, availableWidth - sizeColumnHeader.Width - statusColumnHeader.Width);
+        }
+
+        private void ConfigureNavigationPane()
+        {
+            modulesTreeView.Dock = DockStyle.Fill;
+            modulesTreeView.Scrollable = true;
+            modulesTreeView.ShowNodeToolTips = true;
+            modulesTreeView.HideSelection = false;
+            modulesTreeView.FullRowSelect = true;
+            modulesTreeView.ItemHeight = 24;
+            modulesTreeView.Indent = 18;
+            modulesTreeView.BorderStyle = BorderStyle.None;
+
+            modulesSplitContainer.Panel1MinSize = 300;
+            if (modulesSplitContainer.SplitterDistance < 300)
+            {
+                modulesSplitContainer.SplitterDistance = 300;
+            }
+        }
+
+        private void ConfigureGlobalScrollBars()
+        {
+            this.AutoScroll = false;
+            this.modulesSplitContainer.Panel2.AutoScroll = true;
+            this.secondaryLowerSplitContainer.Panel1.AutoScroll = false;
+            this.secondaryLowerSplitContainer.Panel2.AutoScroll = false;
+            this.filesListView.Scrollable = true;
+        }
+
+        private void SelectInitialNavigationNode()
+        {
+            if (modulesTreeView.Nodes.Count == 0)
+            {
+                return;
+            }
+
+            modulesTreeView.TopNode = modulesTreeView.Nodes[0];
+            var firstLeaf = modulesTreeView.Nodes["CredentialsNode"]?.Nodes["PasswordsNode"];
+            if (firstLeaf != null)
+            {
+                modulesTreeView.SelectedNode = firstLeaf;
+                firstLeaf.EnsureVisible();
+            }
         }
 
         private void InitilizeModulesUserControls()
@@ -631,98 +973,313 @@ tshark -F pcap -r <pcapng file> -w <pcap file>";
 
         private void ModulesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            this.modulesSplitContainer.Panel2.Controls.Clear();
+            if (e.Node.Name == "SettingsThemeNode")
+            {
+                ToggleTheme();
+                return;
+            }
+
+            Control selectedControl = null;
 
             switch (e.Node.Name)
             {
                 case "PasswordsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_passwordsUserControl);
+                    selectedControl = _passwordsUserControl;
                     break;
                 case "HashesNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_hashesUserControl);
+                    selectedControl = _hashesUserControl;
                     break;
                 case "NetworkMapNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_networkMapUserControl);
+                    selectedControl = _networkMapUserControl;
                     break;
                 case "SessionsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_sessionsExplorerUserControl);
+                    selectedControl = _sessionsExplorerUserControl;
                     break;
                 case "FilesNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_filesUserControl);
+                    selectedControl = _filesUserControl;
                     break;
                 case "DnsResponsesNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_dnsResponseUserControl);
+                    selectedControl = _dnsResponseUserControl;
                     break;
                 case "VoipCallsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_voipCallsUserControl);
+                    selectedControl = _voipCallsUserControl;
                     break;
-                // Phase 4+ new module nodes
                 case "AlertsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_alertsUserControl);
+                    selectedControl = _alertsUserControl;
                     break;
                 case "BeaconsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_beaconsUserControl);
+                    selectedControl = _beaconsUserControl;
                     break;
                 case "Ja3Node":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_ja3UserControl);
+                    selectedControl = _ja3UserControl;
                     break;
                 case "TlsCertsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_tlsCertsUserControl);
+                    selectedControl = _tlsCertsUserControl;
                     break;
                 case "SshNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_sshUserControl);
+                    selectedControl = _sshUserControl;
                     break;
                 case "HttpNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_httpUserControl);
+                    selectedControl = _httpUserControl;
                     break;
                 case "SmbNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_smbUserControl);
+                    selectedControl = _smbUserControl;
                     break;
                 case "DhcpNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_dhcpUserControl);
+                    selectedControl = _dhcpUserControl;
                     break;
                 case "ArpNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_arpUserControl);
+                    selectedControl = _arpUserControl;
                     break;
                 case "AnomaliesNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_anomaliesUserControl);
+                    selectedControl = _anomaliesUserControl;
                     break;
                 case "RuleMatchNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_detectionMatchUserControl);
+                    selectedControl = _detectionMatchUserControl;
                     break;
                 case "DnsExfilNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_dnsExfilUserControl);
+                    selectedControl = _dnsExfilUserControl;
                     break;
                 case "PacketHexNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_hexViewerUserControl);
+                    selectedControl = _hexViewerUserControl;
                     break;
                 case "ProtocolStatsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_protocolStatsUserControl);
                     _protocolStatsUserControl.UpdateStats(_networkContext);
+                    selectedControl = _protocolStatsUserControl;
                     break;
                 case "AuditLogNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_auditLogUserControl);
-                    break;
-                case "SettingsThemeNode":
-                    ToggleTheme();
+                    selectedControl = _auditLogUserControl;
                     break;
                 case "BacnetAnalysisNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_bacnetAnalyzerUserControl);
                     _bacnetAnalyzerUserControl.Analyze(_networkContext);
+                    selectedControl = _bacnetAnalyzerUserControl;
                     break;
                 case "TimelineNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_timelineUserControl);
                     _timelineUserControl.LoadFromContext(_networkContext);
+                    selectedControl = _timelineUserControl;
                     break;
                 case "FlowStatsNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_flowStatsUserControl);
                     _flowStatsUserControl.LoadFromEngine(_flowEngine);
+                    selectedControl = _flowStatsUserControl;
                     break;
                 case "CaptureCompareNode":
-                    this.modulesSplitContainer.Panel2.Controls.Add(_captureCompareUserControl);
+                    selectedControl = _captureCompareUserControl;
                     break;
-                default:
-                    break;
+            }
+
+            ShowResultControl(selectedControl);
+        }
+
+        private void ShowResultControl(Control selectedControl)
+        {
+            this.modulesSplitContainer.Panel2.SuspendLayout();
+            this.modulesSplitContainer.Panel2.Controls.Clear();
+
+            if (selectedControl != null)
+            {
+                selectedControl.Dock = DockStyle.Fill;
+                selectedControl.Margin = new Padding(0);
+                ConfigureResultScrollBars(selectedControl);
+                ApplyThemeToDetachedControl(selectedControl);
+                this.modulesSplitContainer.Panel2.Controls.Add(selectedControl);
+            }
+
+            this.modulesSplitContainer.Panel2.ResumeLayout(true);
+        }
+
+        private void ConfigureResultScrollBars(Control root)
+        {
+            foreach (Control control in EnumerateWithRoot(root))
+            {
+                if (control is DataGridView grid)
+                {
+                    grid.ScrollBars = ScrollBars.Both;
+                    grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                    grid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+                    grid.AllowUserToResizeColumns = true;
+                    grid.AllowUserToResizeRows = true;
+                }
+                else if (control is ListView listView)
+                {
+                    listView.Scrollable = true;
+                }
+                else if (control is TreeView treeView)
+                {
+                    treeView.Scrollable = true;
+                }
+                else if (control is RichTextBox richTextBox)
+                {
+                    richTextBox.ScrollBars = RichTextBoxScrollBars.Both;
+                    richTextBox.WordWrap = false;
+                }
+                else if (control is Panel panel)
+                {
+                    panel.AutoScroll = true;
+                }
+                else if (control is SplitContainer splitContainer)
+                {
+                    splitContainer.Panel1.AutoScroll = true;
+                    splitContainer.Panel2.AutoScroll = true;
+                }
+            }
+        }
+
+        private void ApplyThemeToDetachedControl(Control root)
+        {
+            foreach (Control control in EnumerateWithRoot(root))
+            {
+                ApplyThemeToSingleControl(control);
+            }
+        }
+
+        private IEnumerable<Control> EnumerateWithRoot(Control root)
+        {
+            yield return root;
+
+            foreach (var control in GetAllControls(root))
+            {
+                yield return control;
+            }
+        }
+
+        private void ApplyThemeToSingleControl(Control control)
+        {
+            if (_isDarkTheme)
+            {
+                if (control is Button btn)
+                {
+                    btn.UseVisualStyleBackColor = false;
+                    btn.FlatStyle = FlatStyle.Flat;
+                    btn.FlatAppearance.BorderColor = Color.FromArgb(0x5C, 0x67, 0x88);
+                    btn.FlatAppearance.BorderSize = 1;
+                    btn.BackColor = Color.FromArgb(0x35, 0x3A, 0x52);
+                    btn.ForeColor = Color.FromArgb(0xEC, 0xF2, 0xFF);
+                }
+                else if (control is GroupBox gb)
+                {
+                    gb.ForeColor = Color.FromArgb(0x89, 0xB4, 0xFA);
+                    gb.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
+                }
+                else if (control is Label label)
+                {
+                    label.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                }
+                else if (control is CheckBox cb)
+                {
+                    cb.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    cb.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    cb.UseVisualStyleBackColor = false;
+                    cb.FlatStyle = FlatStyle.Flat;
+                    cb.FlatAppearance.BorderColor = Color.FromArgb(0x5C, 0x67, 0x88);
+                    cb.FlatAppearance.CheckedBackColor = Color.FromArgb(0x2D, 0x64, 0x8F);
+                    cb.FlatAppearance.MouseOverBackColor = Color.FromArgb(0x3E, 0x48, 0x68);
+                    if (cb.Appearance == Appearance.Button)
+                    {
+                        cb.TextAlign = ContentAlignment.MiddleCenter;
+                        cb.FlatAppearance.BorderSize = 1;
+                    }
+                }
+                else if (control is TextBox tb)
+                {
+                    tb.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    tb.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    tb.BorderStyle = BorderStyle.FixedSingle;
+                }
+                else if (control is ComboBox combo)
+                {
+                    combo.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    combo.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    combo.FlatStyle = FlatStyle.Flat;
+                }
+                else if (control is DataGridView dgv)
+                {
+                    dgv.BackgroundColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    dgv.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    dgv.GridColor = Color.FromArgb(0x45, 0x47, 0x5A);
+                    dgv.BorderStyle = BorderStyle.None;
+                    dgv.EnableHeadersVisualStyles = false;
+                    dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0x35, 0x3A, 0x52);
+                    dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(0xEC, 0xF2, 0xFF);
+                    dgv.DefaultCellStyle.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    dgv.DefaultCellStyle.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0x45, 0x47, 0x5A);
+                    dgv.DefaultCellStyle.SelectionForeColor = Color.White;
+                    dgv.RowHeadersVisible = false;
+                }
+                else if (control is ListView listView)
+                {
+                    listView.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    listView.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    listView.BorderStyle = BorderStyle.None;
+                }
+                else if (control is RichTextBox richTextBox)
+                {
+                    richTextBox.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    richTextBox.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    richTextBox.BorderStyle = BorderStyle.FixedSingle;
+                }
+                else
+                {
+                    control.BackColor = Color.FromArgb(0x1E, 0x1E, 0x2E);
+                }
+            }
+            else
+            {
+                if (control is Button btn)
+                {
+                    btn.BackColor = SystemColors.Control;
+                    btn.ForeColor = SystemColors.ControlText;
+                    btn.FlatStyle = FlatStyle.Standard;
+                    btn.UseVisualStyleBackColor = true;
+                }
+                else if (control is GroupBox gb)
+                {
+                    gb.ForeColor = SystemColors.ControlText;
+                    gb.BackColor = SystemColors.Control;
+                }
+                else if (control is Label label)
+                {
+                    label.ForeColor = SystemColors.ControlText;
+                }
+                else if (control is CheckBox cb)
+                {
+                    cb.ForeColor = SystemColors.ControlText;
+                    cb.BackColor = SystemColors.Control;
+                    cb.UseVisualStyleBackColor = true;
+                    cb.FlatStyle = FlatStyle.Standard;
+                }
+                else if (control is TextBox tb)
+                {
+                    tb.BackColor = SystemColors.Window;
+                    tb.ForeColor = SystemColors.WindowText;
+                    tb.BorderStyle = BorderStyle.Fixed3D;
+                }
+                else if (control is ComboBox combo)
+                {
+                    combo.BackColor = SystemColors.Window;
+                    combo.ForeColor = SystemColors.WindowText;
+                }
+                else if (control is DataGridView dgv)
+                {
+                    dgv.BackgroundColor = SystemColors.Window;
+                    dgv.ForeColor = SystemColors.WindowText;
+                    dgv.GridColor = SystemColors.ControlDark;
+                    dgv.BorderStyle = BorderStyle.FixedSingle;
+                    dgv.EnableHeadersVisualStyles = true;
+                    dgv.RowHeadersVisible = false;
+                }
+                else if (control is ListView listView)
+                {
+                    listView.BackColor = SystemColors.Window;
+                    listView.ForeColor = SystemColors.WindowText;
+                    listView.BorderStyle = BorderStyle.FixedSingle;
+                }
+                else if (control is RichTextBox richTextBox)
+                {
+                    richTextBox.BackColor = SystemColors.Window;
+                    richTextBox.ForeColor = SystemColors.WindowText;
+                    richTextBox.BorderStyle = BorderStyle.Fixed3D;
+                }
             }
         }
 
@@ -1092,6 +1649,7 @@ This means a faster processing but also that some obects may not be extracted.")
 
             this.modulesTreeView.Nodes.Add(toolsNode);
             this.modulesTreeView.Nodes.Add(statsNode);
+            this.modulesTreeView.Nodes.Add(settingsNode);
 
             // Timeline & Flow nodes
             var timelineNode = new TreeNode { Name = "TimelineNode", Text = "Timeline" };
@@ -1104,9 +1662,6 @@ This means a faster processing but also that some obects may not be extracted.")
                 Text = "BACnet Analysis"
             };
 
-            this.modulesTreeView.Nodes.Add(timelineNode);
-
-            // Enterprise: Flow Statistics node
             this.modulesTreeView.Nodes.Add(timelineNode);
             this.modulesTreeView.Nodes.Add(flowNode);
             this.modulesTreeView.Nodes.Add(bacnetNode);
@@ -1179,6 +1734,17 @@ This means a faster processing but also that some obects may not be extracted.")
                 else if (ctrl is CheckBox cb)
                 {
                     cb.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    cb.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    cb.UseVisualStyleBackColor = false;
+                    cb.FlatStyle = FlatStyle.Flat;
+                    cb.FlatAppearance.BorderColor = Color.FromArgb(0x5C, 0x67, 0x88);
+                    cb.FlatAppearance.CheckedBackColor = Color.FromArgb(0x2D, 0x64, 0x8F);
+                    cb.FlatAppearance.MouseOverBackColor = Color.FromArgb(0x3E, 0x48, 0x68);
+                    if (cb.Appearance == Appearance.Button)
+                    {
+                        cb.TextAlign = ContentAlignment.MiddleCenter;
+                        cb.FlatAppearance.BorderSize = 1;
+                    }
                 }
                 else if (ctrl is ComboBox combo)
                 {
@@ -1203,12 +1769,41 @@ This means a faster processing but also that some obects may not be extracted.")
                     lv.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
                     lv.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
                     lv.BorderStyle = BorderStyle.None;
+                    lv.Scrollable = true;
+                }
+                else if (ctrl is DataGridView dgv)
+                {
+                    dgv.BackgroundColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    dgv.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    dgv.GridColor = Color.FromArgb(0x45, 0x47, 0x5A);
+                    dgv.BorderStyle = BorderStyle.None;
+                    dgv.EnableHeadersVisualStyles = false;
+                    dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0x35, 0x3A, 0x52);
+                    dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(0xEC, 0xF2, 0xFF);
+                    dgv.DefaultCellStyle.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    dgv.DefaultCellStyle.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0x45, 0x47, 0x5A);
+                    dgv.DefaultCellStyle.SelectionForeColor = Color.White;
+                    dgv.RowHeadersVisible = false;
+                    dgv.ScrollBars = ScrollBars.Both;
+                }
+                else if (ctrl is RichTextBox richTextBox)
+                {
+                    richTextBox.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
+                    richTextBox.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+                    richTextBox.BorderStyle = BorderStyle.FixedSingle;
+                    richTextBox.ScrollBars = RichTextBoxScrollBars.Both;
+                }
+                else if (ctrl is Label label)
+                {
+                    label.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
                 }
             }
 
             // Progress bar styling
             this.progressBar.BackColor = Color.FromArgb(0x25, 0x25, 0x40);
             this.progressBar.ForeColor = Color.FromArgb(0xCD, 0xD6, 0xF4);
+            UpdateThemeToggleButton();
         }
 
         /// <summary>
@@ -1230,7 +1825,9 @@ This means a faster processing but also that some obects may not be extracted.")
         /// </summary>
         private void InitializeToolTips()
         {
-            var toolTip = new ToolTip();
+            _uiToolTip?.Dispose();
+            _uiToolTip = new ToolTip();
+            var toolTip = _uiToolTip;
             toolTip.AutoPopDelay = 8000;
             toolTip.InitialDelay = 500;
             toolTip.ReshowDelay = 200;
@@ -1246,6 +1843,12 @@ This means a faster processing but also that some obects may not be extracted.")
             // ── Action buttons ──
             toolTip.SetToolTip(this.exportResutlsButton, "Export all findings to HTML, JSON, CSV, and other formats");
             toolTip.SetToolTip(this.clearResutlsButton, "Clear all current results and reset the workspace");
+            foreach (var toolbarButton in GetAllControls(this).OfType<Button>().Where(button => button.Tag is string))
+                toolTip.SetToolTip(toolbarButton, toolbarButton.Tag.ToString());
+            if (_helpToolbarButton != null)
+                toolTip.SetToolTip(_helpToolbarButton, "Open the BruteShark Studio help manual");
+            if (_themeToggleButton != null)
+                toolTip.SetToolTip(_themeToggleButton, "Toggle dark/light theme");
 
             // ── Live capture ──
             toolTip.SetToolTip(this.liveCaptureButton, "Start live network packet capture on selected interface");
@@ -1355,14 +1958,34 @@ This means a faster processing but also that some obects may not be extracted.")
                 {
                     if (ctrl is Button btn) { btn.BackColor = SystemColors.Control; btn.ForeColor = SystemColors.ControlText; btn.FlatStyle = FlatStyle.Standard; }
                     else if (ctrl is GroupBox gb) gb.ForeColor = SystemColors.ControlText;
-                    else if (ctrl is CheckBox cb) cb.ForeColor = SystemColors.ControlText;
+                    else if (ctrl is Label label) label.ForeColor = SystemColors.ControlText;
+                    else if (ctrl is CheckBox cb) { cb.ForeColor = SystemColors.ControlText; cb.BackColor = SystemColors.Control; cb.UseVisualStyleBackColor = true; cb.FlatStyle = FlatStyle.Standard; }
                     else if (ctrl is ComboBox c) { c.BackColor = SystemColors.Window; c.ForeColor = SystemColors.WindowText; }
                     else if (ctrl is TextBox t) { t.BackColor = SystemColors.Window; t.ForeColor = SystemColors.WindowText; }
                     else if (ctrl is CheckedListBox cl) { cl.BackColor = SystemColors.Window; cl.ForeColor = SystemColors.WindowText; }
                     else if (ctrl is ListView lv) { lv.BackColor = SystemColors.Window; lv.ForeColor = SystemColors.WindowText; }
+                    else if (ctrl is DataGridView dgv) { dgv.BackgroundColor = SystemColors.Window; dgv.ForeColor = SystemColors.WindowText; dgv.GridColor = SystemColors.ControlDark; dgv.EnableHeadersVisualStyles = true; }
+                    else if (ctrl is RichTextBox rtb) { rtb.BackColor = SystemColors.Window; rtb.ForeColor = SystemColors.WindowText; }
+                    else if (ctrl is Panel || ctrl is TableLayoutPanel || ctrl is FlowLayoutPanel) ctrl.BackColor = SystemColors.Control;
                 }
                 AuditLog("Theme", "Switched to Light theme");
             }
+
+            UpdateThemeToggleButton();
+            if (this.modulesSplitContainer.Panel2.Controls.Count > 0)
+            {
+                ApplyThemeToDetachedControl(this.modulesSplitContainer.Panel2.Controls[0]);
+            }
+        }
+
+        private void UpdateThemeToggleButton()
+        {
+            if (_themeToggleButton == null)
+            {
+                return;
+            }
+
+            _themeToggleButton.Text = _isDarkTheme ? "🌙" : "☀";
         }
 
         /// <summary>Save all analysis results to a portable JSON project file.</summary>

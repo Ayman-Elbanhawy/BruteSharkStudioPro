@@ -1,391 +1,248 @@
-# 🦁 BruteShark Studio v2.3
+# BruteShark Desktop Studio v2.3.0
 
-**Professional Network Forensic Analysis Toolkit for Windows**
+Professional network forensic analysis for Windows.
 
 [![Version](https://img.shields.io/badge/version-2.3.0-blue)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/releases)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64%20%7C%20x86-lightgrey)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green)](LICENSE)
-[![Build](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro)
 
-BruteShark Studio v2.3 is a desktop-focused network forensic analysis platform for reviewing packet captures, extracting credentials and authentication hashes, detecting C2 beacons, fingerprinting TLS/SSH, identifying anomalies, reconstructing TCP/UDP sessions, exporting investigation artifacts in 18 formats, saving/loading projects, and running Hashcat — all from an intuitive dark-themed desktop interface or automated CLI pipeline.
+BruteShark Desktop Studio helps investigators review packet captures, reconstruct sessions, extract credentials and hashes, detect suspicious traffic, fingerprint TLS/SSH activity, carve files, export evidence, and preserve analysis state from a polished WinForms desktop application.
 
-Repository: <https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro>
-
-Full Help Manual: [`docs/BruteSharkStudioHelp.html`](./docs/BruteSharkStudioHelp.html)
+Full help manual: [docs/BruteSharkStudioHelp.html](./docs/BruteSharkStudioHelp.html)
 
 ---
 
-## 📥 Download
+## Main Window
 
-| Format | Link |
-|--------|------|
-| **MSI Installer (ZIP)** | [`release/BruteSharkDesktopStudioInstaller.zip`](./release/BruteSharkDesktopStudioInstaller.zip) |
-| **Direct MSI** | [`release/BruteSharkDesktopStudioInstaller.msi`](./release/BruteSharkDesktopStudioInstaller.msi) |
-| **GitHub Download** | [Raw ZIP link](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/blob/main/release/BruteSharkDesktopStudioInstaller.zip?raw=1) |
+![BruteShark Desktop Studio main window](readme_media/BruteSharkDesktopStudio_Main_v2.png)
 
-Bundles Hashcat v6.2.6 with 30+ rule files. Adds Hashcat to system PATH during elevated install.
+The v2.3 interface organizes the workflow into five areas:
 
----
+| Area | Purpose |
+| --- | --- |
+| Files Analyzing | Add PCAP/PCAPNG files, remove files, and run offline analysis. |
+| Modules | Enable or disable analysis modules before processing. |
+| Options | Toggle TCP and UDP session reconstruction. |
+| Actions | Export results or clear the current workspace. |
+| Live Capture | Select an interface, apply a BPF filter, enable promiscuous mode, and start or stop live capture. |
 
-## 📸 Screenshots
-
-### Main Window (v2.0 — Dark Theme)
-![Main Window](readme_media/BruteSharkDesktopStudio_Main_v2.png)
-
-### Network Map
-![Network Map](readme_media/NetworkMap.png)
-
-### Hashcat Workflow
-![Hashes View](readme_media/BruteSharkDesktopStudio_Hashes.png)
-
-<details>
-<summary><strong>More Screenshots</strong></summary>
-
-| View | Screenshot |
-|------|-----------|
-| Passwords | ![Passwords](readme_media/Passwords.PNG) |
-| Hashes | ![Hashes](readme_media/Hashes.PNG) |
-| TCP Sessions | ![Sessions](readme_media/TcpSessions.PNG) |
-| File Carving | ![Files](readme_media/FilesCarving.png) |
-| VoIP Calls | ![VoIP](readme_media/VoIP.png) |
-| CLI (GIF) | ![CLI](readme_media/BruteSharkCli.gif) |
-
-</details>
+The lower toolbar provides quick access to `+ Add`, `Run`, `Export`, `Clear`, `Save`, `Open`, `PDF`, `?` Help, and the moon/sun theme toggle. The left navigation tree contains all result views and now remains fully visible with vertical scrolling.
 
 ---
 
-## 🏢 New in v2.2 — Enterprise Features
+## Download
 
-### 💾 Session Persistence
-- **Save Project** (<kbd>Ctrl</kbd>+<kbd>S</kbd>) — serializes all results to `.bsproj` JSON
-- **Load Project** (<kbd>Ctrl</kbd>+<kbd>O</kbd>) — restores full investigation state
-- Saves: passwords, hashes, connections, files, DNS, VoIP, JA3, beacons, alerts, DHCP, SSH, HTTP, TLS, DNS exfil, detection matches
+| Package | Path |
+| --- | --- |
+| MSI installer | [release/BruteSharkDesktopStudioInstaller.msi](./release/BruteSharkDesktopStudioInstaller.msi) |
+| ZIP package | [release/BruteSharkDesktopStudioInstaller.zip](./release/BruteSharkDesktopStudioInstaller.zip) |
 
-### 🔢 Packet Hex Viewer
-- Wireshark-style hex dump with offset/HEX/ASCII panels
-- Paste raw hex or text for parsing
-- Synced scrolling between HEX and ASCII views
+The installer bundles the desktop app, required DLLs, the HTML help manual, the main screenshot, README documentation, and Hashcat v7.1.2.
 
-### 📊 Protocol Statistics Dashboard
-- Protocol distribution bar chart with percentages
-- Top 20 talkers table (source → destination pairs)
-- Connection summary (total connections, unique hosts)
+---
 
-### 📝 Audit Logging
-- Timestamped activity trail (5,000 entry cap)
-- Tracks: app start, file loads, analysis, exports, clears, theme changes, errors
-- Double-click entries to copy to clipboard
-- Essential for forensic chain-of-custody
+## Quick Start
 
-### 🎨 Theme Toggle
-- One-click dark ↔ light theme switching via Settings tree node
-- Dark: Catppuccin-inspired (#1E1E2E)
-- Light: Windows system colors
+1. Install BruteShark Desktop Studio from the MSI.
+2. Start the application from the desktop or Start menu shortcut.
+3. Click `+ Add` and select one or more `.pcap`, `.pcapng`, or `.cap` files.
+4. Keep TCP/UDP session reconstruction enabled for the deepest analysis.
+5. Select the modules you want in the `Modules` checklist.
+6. Click `Run` or `Analyze`.
+7. Browse results from the left navigation tree.
+8. Click `Export` to generate evidence files and a full HTML forensic report.
+9. Click `Save` to preserve the case as a `.bsproj` file.
 
-### ⌨️ Keyboard Shortcuts
+For live capture, select a network interface, optionally enter a BPF filter such as `tcp port 80` or `host 192.168.1.10`, choose promiscuous mode if needed, and click `Start`.
+
+---
+
+## Result Views
+
+| View | What it Shows |
+| --- | --- |
+| Credentials > Passwords | Extracted cleartext credentials. |
+| Credentials > Hashes | NTLM, Kerberos, HTTP Digest, CRAM-MD5, POP3 APOP, and other authentication hashes. |
+| Network > Network Map | Host relationships and observed connections. |
+| Network > Sessions | Reconstructed TCP/UDP sessions. |
+| Network > DNS | DNS mappings and query/response activity. |
+| Data > Files | Carved files reconstructed from network streams. |
+| Data > VoIP Calls | SIP/RTP call metadata and media artifacts. |
+| Detection & Alerts | Payload alerts, C2 beacon candidates, and detection rule matches. |
+| Fingerprints & TLS | JA3/JA3S, TLS certificates, and SSH fingerprints. |
+| Protocol Analysis | HTTP, SMB, DHCP, and ARP protocol findings. |
+| Anomalies | Statistical anomalies and unusual traffic patterns. |
+| Exfiltration | DNS exfiltration indicators. |
+| Tools | Packet hex viewer. |
+| Statistics | Protocol statistics and traffic summaries. |
+| Timeline | Chronological event timeline. |
+| Flow Statistics | NetFlow-style flow summaries. |
+| BACnet Analysis | BACnet diagnostics and health indicators. |
+| Monitor | Capture comparison and preview monitoring nodes. |
+| Audit Log | Timestamped application activity trail. |
+
+---
+
+## Analysis Capabilities
+
+### Credentials and Hashes
+
+- NTLMv1/NTLMv2 from SMB, HTTP NTLM, LDAP, and RDP NLA.
+- Kerberos AS-REQ, AS-REP, and TGS-REP material.
+- HTTP Basic and Digest authentication.
+- FTP, SMTP, IMAP, POP3, VNC, SNMP, IRC, LDAP, and CRAM-MD5 credentials where present in capture data.
+- Hashcat-ready export grouped by hash type.
+
+### Network Reconstruction
+
+- TCP and UDP session reconstruction.
+- Network endpoint mapping.
+- DNS mapping and query tracking.
+- VoIP/SIP/RTP call extraction.
+- File carving from network streams.
+
+### Detection and Fingerprinting
+
+- C2 beacon detection.
+- Detection rule matching.
+- Payload pattern alerts.
+- DNS exfiltration indicators.
+- ARP spoofing and DHCP snooping.
+- HTTP metadata extraction.
+- SMB activity analysis.
+- TLS certificate extraction and suspicious certificate flags.
+- JA3/JA3S and SSH fingerprinting.
+- Statistical anomaly detection.
+
+### Case Management and Usability
+
+- Save and open `.bsproj` project files.
+- Dark/light theme toggle.
+- Help/manual button in the main toolbar.
+- Tooltips for primary buttons and navigation items.
+- Vertical and horizontal scrolling for large navigation trees and result tables.
+- Audit log for key user actions.
+
+---
+
+## Export Outputs
+
+Click `Export` and choose an output folder. BruteShark creates evidence artifacts for the data available in the current case, including:
+
+- Carved files.
+- Network map data.
+- VoIP call data.
+- Network node data.
+- DNS mappings.
+- JA3/JA3S fingerprints.
+- Beacon results.
+- Detection rule matches.
+- SSH fingerprints.
+- DHCP leases.
+- HTTP transactions.
+- Payload alerts.
+- TLS certificates.
+- DNS exfiltration alerts.
+- Hashcat-ready hash files.
+- Full interactive HTML forensic report.
+
+The `PDF` toolbar button creates a PDF-ready HTML report. Open the generated report in a browser and use `Print` -> `Save as PDF` when a PDF file is required.
+
+---
+
+## Hashcat Workflow
+
+The installer includes Hashcat v7.1.2 and adds the Hashcat folder to the system PATH during elevated installation.
+
+1. Analyze one or more captures.
+2. Open `Credentials > Hashes`.
+3. Select a hash type.
+4. Choose an output directory and wordlist.
+5. Optionally add extra Hashcat arguments, such as a rules file.
+6. Click `Create Hashcat file` or `Crack with Hashcat`.
+
+Common hash modes include:
+
+| Hash Type | Hashcat Mode |
+| --- | --- |
+| NTLMv1 | 5500 |
+| NTLMv2 | 5600 |
+| Kerberos AS-REQ RC4 | 7500 |
+| Kerberos AS-REP RC4 | 18200 |
+| Kerberos TGS-REP RC4 | 13100 |
+| Kerberos TGS-REP AES128 | 19600 |
+| Kerberos TGS-REP AES256 | 19700 |
+| HTTP Digest MD5 | 11400 |
+| CRAM-MD5 | 16400 |
+| POP3 APOP | 9900 |
+
+---
+
+## Keyboard Shortcuts
+
 | Shortcut | Action |
-|----------|--------|
-| <kbd>Ctrl</kbd>+<kbd>S</kbd> | Save project (.bsproj) |
-| <kbd>Ctrl</kbd>+<kbd>O</kbd> | Load project |
-| <kbd>Ctrl</kbd>+<kbd>P</kbd> | Export PDF-ready report |
-
-### 🔌 Plugin SDK
-- `IPlugin` interface for custom dissector modules
-- Name, Version, Description, Initialize(), Shutdown()
-- Full API documentation coming in v2.3
-
-### 🏗️ BACnet Analysis Tab (OptigoVN-Style)
-- **37 diagnostic checks** with Pass✅/Warn⚠️/Fail❌ color coding
-- Health score + 3 sub-scores (Connectivity, Performance, Integrity)
-- Device Browser with IP, MAC, Type, Vendor, Status
-- Traffic by Source bar charts (native GDI+)
-- Protocol Distribution visualization
-- Offenders panel with fix recommendations
-- CSV + PDF-ready HTML export
-- Based on ASHRAE 135.1 / OptigoVN / BACPro methodology
-
-### 📅 Timeline View
-- Chronological event timeline — 14 event types color-coded
-- Export timeline as CSV
-
-### 📊 Flow Statistics
-- Protocol distribution with packet/byte counts
-- Top 30 talkers (source → destination pairs)
-- Flow summary (total flows, unique sources/destinations, data size)
-
-### 🎨 Full Dark Theme
-- All 28+ user controls themed (#1E1E2E / Catppuccin palette)
-- ScrollBars on every DataGridView
-- Help button always visible (docked bottom-left)
-- Sessions, Hashes, Network Map, DNS, VoIP, Files — all dark
-
-### 🐛 Bug Fixes
-- SMB/ARP tabs now populate (were routing to Alerts only)
-- Duplicate PayloadAlert handler resolved — anomaly tracking works
-- DetectionRuleEngine results visible in UI (Rule Matches tab)
-- DNS ExfiltrationModule fully wired to UI and export
-- Export coverage for SSH, DHCP, HTTP, TLS, PayloadAlerts, DNS Exfil
+| --- | --- |
+| `Ctrl+S` | Save project as `.bsproj`. |
+| `Ctrl+O` | Open a saved project. |
+| `Ctrl+P` | Export a PDF-ready HTML report. |
 
 ---
 
-## 🔥 What's New in v2.0
+## Live Capture Notes
 
-### 🛡️ Threat Detection
-- **C2 Beacon Hunting** — statistical analysis of connection timing to identify periodic callback behavior
-- **JA3/JA3S Fingerprinting** — TLS client/server fingerprinting with 13 known-malicious signatures
-- **Detection Rule Engine** — 12 built-in rules + YARA rule loading for custom detection
-- **DNS Exfiltration Detection** — entropy/length-based detection of DNS tunneling
-- **Payload Pattern Scanning** — regex-based scanning for shells, malware, suspicious strings
-- **ARP Spoofing Detection** — ARP cache poisoning / MITM attack identification
+Live capture requires a compatible packet capture driver such as Npcap. For best results:
 
-### 🔍 Fingerprinting & Protocol Analysis
-- **TLS Certificate Extraction** — X.509 cert parsing with suspicious cert detection (self-signed, expired, long validity)
-- **SSH Fingerprint** — host key extraction & key-change detection for MITM monitoring
-- **HTTP Metadata** — request/response headers, User-Agent tracking, URL extraction
-- **SMB Dissector** — NTLM over SMB, named pipe detection, share enumeration
-- **DHCP Snooping** — rogue DHCP server detection, lease tracking, starvation attacks
-- **Flow Aggregation** — NetFlow-style 5-tuple flow records with byte/packet statistics
-- **Anomaly Detection** — statistical baselining for bandwidth spikes, packet rate anomalies, unusual ports
-
-### 🔐 Expanded Credential Extraction (19 Parsers)
-New in v2.0: **POP3**, **RDP NLA**, **VNC**, **SNMP**, **IRC**, **IMAP**
-
-### 📊 Multi-Format Export (14 Formats)
-New: **HTML Forensic Reports**, **PDF Reports**, **Zeek-Format Logs** (conn, dns, ssl, http), **STIX 2.0**, **MISP**
-
-### 🌐 REST API
-Programmatic access via `http://localhost:8089` — status, results, IOCs, reports, Zeek logs
-
-### 🎨 Professional UI
-Dark theme (#1E1E2E), tooltips on all controls, 10 new result view nodes, SQLite case management
+- Run the application with appropriate privileges when capturing from protected interfaces.
+- Use BPF filters to reduce noise during capture.
+- Enable promiscuous mode only when you need to observe traffic not addressed to the local host.
+- Stop capture before exporting if you want a stable snapshot of the current case.
 
 ---
 
-## ✨ Full Feature List
+## Build from Source
 
-### 🔐 Credential & Hash Extraction (19 Parsers)
+Requirements:
 
-| Protocol / Type | Method |
-|----------------|--------|
-| **NTLMv1/v2** | SMB, HTTP, LDAP, RDP NLA |
-| **Kerberos** | AS-REQ, AS-REP, TGS-REP (RC4, AES128, AES256) |
-| **LDAP** | Simple bind |
-| **HTTP** | Basic, Digest MD5 |
-| **FTP** | USER/PASS |
-| **SMTP** | AUTH LOGIN, AUTH PLAIN |
-| **IMAP** | LOGIN |
-| **POP3** | USER/PASS, APOP |
-| **VNC** | Challenge-response |
-| **SNMP** | Community strings (v1/v2c) |
-| **IRC** | PASS, NickServ |
-| **CRAM-MD5** | SMTP/IMAP/POP3 challenge-response |
+- Windows.
+- .NET 8 SDK.
+- WiX Toolset 3.11 files under `BruteSharkStudio\packages\WiX.3.11.2\tools`.
+- Hashcat staged under `BruteSharkStudio\BruteSharkDesktopInstaller\Assets\Hashcat`.
 
-### 🌐 Network Analysis
-
-- Interactive visual network map with endpoint enrichment
-- TCP/UDP session reconstruction with protocol-aware hex viewer
-- DNS name-to-IP mapping with query/response pair tracking
-- Open port enumeration per host
-- BPF capture filter support for live captures
-- Promiscuous mode toggle
-
-### 📦 Evidence Extraction
-
-- File carving from TCP streams (50+ file types: images, archives, docs, executables)
-- VoIP call reconstruction from SIP/RTP traffic
-- Chronological forensic timeline of all detected events
-- SQLite case database for persistent investigation management
-
-### 🛡️ Threat Intelligence
-
-- **AbuseIPDB** API v2 integration for IP reputation scoring
-- **VirusTotal** API integration for hash/file lookups (optional)
-- **JA3 fingerprint database** — 13 known-malicious TLS signatures
-- **12 detection rules** — command injection, PHP shells, encoded payloads, SQL injection, XSS
-- **YARA rule loading** — external rule file support
-- **AbuseIPDB categories** — DDoS, botnet C2, brute-force, port scan, hacking, malware distribution
-
-### 📊 Export Formats (18 Total)
-
-| Format | Description |
-|--------|-------------|
-| **HTML Report** | Full forensic report — 16 sections, dark theme, collapsible, searchable |
-| **PDF Report** | Self-contained PDF — no external dependencies |
-| **JSON** | Machine-readable summary of all results |
-| **CSV** | Credentials, hashes, connections, DNS |
-| **STIX 2.0** | Structured Threat Information for TIP integration |
-| **MISP** | Compatible JSON for MISP threat sharing |
-| **Zeek conn.log** | TCP/UDP connection records |
-| **Zeek dns.log** | DNS query/response pairs |
-| **Zeek ssl.log** | TLS handshake metadata |
-| **Zeek http.log** | HTTP transactions |
-| **Hashcat** | Grouped by hash type, ready-to-crack |
-| **TXT Timeline** | Chronological event log |
-| **IOC Export** | Indicators of compromise |
-| **Raw Files** | Carved files, VoIP audio |
-
----
-
-## 🔨 Hashcat Integration
-
-### Supported Hashcat Modes
-
-| Hash Type | Mode | Source |
-|-----------|------|--------|
-| NTLMv1 | 5500 | SMB, HTTP NTLM, LDAP |
-| NTLMv2 | 5600 | SMBv2, RDP NLA, LDAP |
-| Kerberos AS-REQ (RC4) | 7500 | AD authentication |
-| Kerberos AS-REP (RC4) | 18200 | AS-REP roasting |
-| Kerberos TGS-REP (RC4) | 13100 | Kerberoasting |
-| Kerberos TGS-REP (AES128) | 19600 | Kerberoasting |
-| Kerberos TGS-REP (AES256) | 19700 | Kerberoasting |
-| HTTP Digest MD5 | 11400 | HTTP Digest auth |
-| CRAM-MD5 | 16400 | SMTP/IMAP/POP3 |
-| POP3 APOP | 9900 | POP3 APOP |
-
-### GUI Workflow
-1. Open the **Hashes** view after analysis
-2. Select a hash type, output directory, and wordlist
-3. Optionally add extra arguments (e.g., `-r rules/best64.rule`)
-4. Click **Crack with Hashcat**
-
-### CLI Workflow
-```powershell
-BruteSharkDesktopStudioCli -m Credentials -d C:\Captures -o C:\Results --hashcat-wordlist C:\Wordlists\rockyou.txt
-```
-
----
-
-## 🌐 REST API
-
-The desktop app exposes endpoints on `http://localhost:8089`:
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/status` | GET | Module list, counts, analysis state |
-| `/api/results` | GET | All parsed results (JSON) |
-| `/api/credentials` | GET | Passwords and hashes |
-| `/api/network` | GET | Connections, DNS, ports |
-| `/api/iocs` | GET | Indicators of compromise |
-| `/api/report` | GET | Generate HTML report |
-| `/api/zeek` | GET | Zeek-format logs |
-
----
-
-## ⌨️ CLI Usage
+Build the desktop app:
 
 ```powershell
-# Full analysis
-BruteSharkDesktopStudioCli -m All -d C:\Captures -o C:\Results
-
-# Credentials + Hashcat
-BruteSharkDesktopStudioCli -m Credentials -d C:\Captures -o C:\Results --hashcat-wordlist rockyou.txt
-
-# Single file
-BruteSharkDesktopStudioCli -f C:\Captures\suspicious.pcap -o C:\Results
-
-# Live capture
-BruteSharkDesktopStudioCli -l "Wi-Fi" -m Credentials,NetworkMap -o C:\Results
+cd C:\WireSharkTools\BruteSharkPro\BruteSharkStudio\BruteSharkDesktop
+dotnet build .\BruteSharkDesktop.csproj
 ```
 
-### CLI Flags
-
-| Flag | Description |
-|------|-------------|
-| `-m, --modules` | Module list: `All` or comma-separated names |
-| `-d, --directory` | Directory of PCAP files |
-| `-f, --file` | Single PCAP file |
-| `-l, --live` | Live capture interface name |
-| `-o, --output` | Output directory |
-| `--hashcat-path` | Path to hashcat.exe |
-| `--hashcat-wordlist` | Wordlist for cracking |
-
----
-
-## 🖥️ Desktop Usage
-
-1. Launch **BruteShark Desktop Studio** from desktop shortcut or Start Menu
-2. Click **Add Files** and select `.pcap` / `.pcapng` captures
-3. Select analysis modules from the checklist (default: all)
-4. Keep TCP & UDP session reconstruction ON for full depth
-5. Click **Run** — progress bar shows analysis status
-6. Click tree nodes to inspect results:
-   - **Credentials** → Passwords, Hashes
-   - **Network** → Network Map, Sessions, DNS
-   - **Detection & Alerts** → Alerts, C2 Beacons, Rule Matches
-   - **Fingerprints & TLS** → JA3/JA3S, TLS Certificates, SSH
-   - **Protocol Analysis** → HTTP, SMB, DHCP, ARP
-   - **Anomalies** → Statistical detections
-   - **Exfiltration** → DNS Exfiltration
-   - **Data** → Files, VoIP Calls
-   - **BACnet Analysis** → 37 diagnostic checks, device browser, charts
-   - **Timeline** → Chronological event view
-   - **Flow Statistics** → Protocol distribution, top talkers
-   - **Statistics** → Protocol Stats dashboard
-   - **Tools** → Hex Viewer
-   - **Settings** → Theme toggle
-   - **Audit Log** → Activity trail
-7. Click **Export Results** for comprehensive HTML/PDF reports
-
----
-
-## 🔧 Building from Source
+Build the MSI:
 
 ```powershell
-# Build the solution
-dotnet build .\BruteSharkStudio\PcapProcessor.sln -v:minimal
+cd C:\WireSharkTools\BruteSharkPro\BruteSharkStudio\BruteSharkDesktopInstaller
+dotnet msbuild .\BruteSharkDesktopInstaller.wixproj /p:Configuration=Debug /p:Platform=x86
+```
 
-# Run tests
-dotnet test .\BruteSharkStudio\PcapProcessor.sln -v:minimal
+The MSI is generated at:
 
-# Run the desktop app
-dotnet run --project .\BruteSharkStudio\BruteSharkDesktop\BruteSharkDesktop.csproj
+```text
+BruteSharkStudio\BruteSharkDesktopInstaller\bin\Debug\BruteSharkDesktopStudioInstaller.msi
+```
 
-# Run the CLI
-dotnet run --project .\BruteSharkStudio\BruteSharkCli\BruteSharkCli.csproj -- --help
+Release copies are stored in:
 
-# Build the MSI installer (requires WiX Toolset v3.11+)
-dotnet msbuild .\BruteSharkStudio\BruteSharkDesktopInstaller\BruteSharkDesktopInstaller.wixproj /t:Build /p:Configuration=Debug
-
-# Package for distribution
-Compress-Archive -Path .\BruteSharkStudio\BruteSharkDesktopInstaller\bin\Debug\BruteSharkDesktopStudioInstaller.msi -DestinationPath .\release\BruteSharkDesktopStudioInstaller.zip
+```text
+release\BruteSharkDesktopStudioInstaller.msi
+release\BruteSharkDesktopStudioInstaller.zip
 ```
 
 ---
 
-## 📁 Repository Layout
+## Responsible Use
 
-```
-BruteSharkPro/
-├── BruteSharkStudio/                    Solution and source
-│   ├── BruteSharkDesktop/              WinForms desktop application
-│   ├── BruteSharkCli/                  Command-line interface
-│   ├── CommonUi/                        Shared UI, exporting, reporting
-│   ├── PcapAnalyzer/                    Analysis engine (16 modules)
-│   ├── PcapProcessor/                   Packet capture and reassembly
-│   ├── BruteForce/                      Hashcat runner
-│   └── BruteSharkDesktopInstaller/      WiX installer project
-├── docs/
-│   └── BruteSharkStudioHelp.html        Full help manual (dark theme)
-├── readme_media/                        Screenshots and images
-├── release/                             Built MSI and ZIP
-└── Pcap_Examples/                       Sample capture files
-```
+BruteShark Desktop Studio is intended for authorized security monitoring, incident response, lab analysis, and forensic investigations. Only analyze captures you are authorized to inspect.
 
 ---
 
-## 📖 Documentation
+## License
 
-- **[Full Help Manual](./docs/BruteSharkStudioHelp.html)** — 25+ sections, all features documented, dark-themed
-- **[GitHub Issues](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/issues)** — Bug reports and feature requests
-- **[GitHub Releases](https://github.com/Ayman-Elbanhawy/BruteSharkStudioPro/releases)** — Version history
-
----
-
-## ⚖️ License
-
-GNU General Public License v3.0
-
-## © Copyright
-
-Code updates and maintenance: **Ayman Elbanhawy** / [softwaremile.com](https://softwaremile.com)
+GPL v3. See [LICENSE](./LICENSE).
